@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
+import 'package:warranti_app/screens/signup_screen.dart';
 import 'package:warranti_app/theme/theme.dart';
 import 'package:warranti_app/widgets/custom_scaffold.dart';
 
@@ -18,7 +20,10 @@ class _SigninScreenState extends State<SigninScreen> {
         child: Column(
       children: [
         const Expanded(
-          child: SizedBox(height: 10),
+          flex: 1,
+          child: SizedBox(
+            height: 10,
+          ),
         ),
         Expanded(
           flex: 7,
@@ -45,7 +50,46 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                     ),
                     const SizedBox(
+                      height: 25.0,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black26, width: 0.5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Logo(
+                                  Logos.google,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text('Sign in with Google'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
                       height: 40.0,
+                    ),
+                    Text(
+                      'Or use your email and password',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: lightColorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 25.0,
                     ),
                     TextFormField(
                       validator: (value) {
@@ -115,7 +159,63 @@ class _SigninScreenState extends State<SigninScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 40.0,
+                      height: 25.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.7,
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(
+                          vertical: 0,
+                          horizontal: 10,
+                        )),
+                        Expanded(
+                          child: Divider(
+                            thickness: 0.7,
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 25.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Don\'t have an account',
+                          style: TextStyle(
+                            color: Colors.black45,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (e) => const SignupScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Sign up',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: lightColorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 25.0,
                     ),
                   ],
                 ),

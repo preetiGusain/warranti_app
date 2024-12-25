@@ -17,7 +17,7 @@ class _SigninScreenState extends State<SigninScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-        child: Column(
+      child: Column(
       children: [
         const Expanded(
           flex: 1,
@@ -60,7 +60,8 @@ class _SigninScreenState extends State<SigninScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black26, width: 0.5),
+                              border:
+                                  Border.all(color: Colors.black26, width: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(

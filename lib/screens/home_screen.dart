@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:warranti_app/api/google_signin_api.dart';
+import 'package:warranti_app/screens/welcome_screen.dart';
 import 'package:warranti_app/service/store_token.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,16 +24,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Home Screen'),
+        centerTitle: true,
+        actions: [
+          TextButton(
+            child: const Text("Logout"),
+            onPressed: () async {
+              await GoogleSigninApi.logout();
+
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => const WelcomeScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: user.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : Padding(
-              padding:  const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CircleAvatar(
                     radius: 50,
@@ -41,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 16,
                   ),
                   Text(
-                    'Name: ${user['username']}', 
+                    'Name: ${user['username']}',
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -57,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       String? token = await getToken();
 
-      if(token == null){
+      if (token == null) {
         print('No token found');
         return;
       }
@@ -69,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Authorization': token,
         },
       );
-     if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final body = response.body;
         final json = jsonDecode(body);
 
@@ -77,7 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
           user = json;
         });
       } else {
-        print('Failed to load user profile, Status code: ${response.statusCode}');
+        print(
+            'Failed to load user profile, Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching user: $e');

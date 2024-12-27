@@ -10,3 +10,8 @@ Future<void> storeToken(String token) async {
 Future<String?> getToken() async {
   return await storage.read(key: 'jwt_token');
 }
+
+Future<void> deleteToken() async {
+  print('Deleting token');
+  return await storage.delete(key: 'jwt_token');
+}

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:warranti_app/api/google_signIn_api.dart';
 import 'package:warranti_app/screens/signup_screen.dart';
-import 'package:warranti_app/service/store_token.dart';
+import 'package:warranti_app/service/token_service.dart';
 import 'package:warranti_app/theme/theme.dart';
 import 'package:warranti_app/widgets/custom_scaffold.dart';
 import 'package:http/http.dart' as http;
@@ -65,19 +65,21 @@ class _SigninScreenState extends State<SigninScreen> {
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.black,
                                 backgroundColor: Colors.white,
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(10),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                side: const BorderSide(color: Colors.black26),
+                                side: BorderSide(color: Colors.grey),
                               ),
                               icon: Image.asset(
                                 'assets/images/google_logo.png',
                                 height: 18,
                               ),
-                              label: const Text(
+                              label: Text(
                                 'Sign in with Google',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16,
+                                color: lightColorScheme.primary,
+                                ),
                               ),
                               onPressed: signIn,
                             ),
@@ -198,7 +200,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            'Don\'t have an account',
+                            'Don\'t have an account? ',
                             style: TextStyle(
                               color: Colors.black45,
                             ),

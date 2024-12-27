@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:warranti_app/screens/home_screen.dart';
+import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';
 
 void main() {
@@ -16,12 +17,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Warranti',
       theme: ThemeData(
-        fontFamily: ('inter'),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: SplashScreen(),
       routes: {
         '/home': (context) => const HomeScreen(),
+        '/signin': (context) => const SigninScreen()
       },
     );
   }

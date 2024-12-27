@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:warranti_app/api/google_signin_api.dart';
-import 'package:warranti_app/screens/welcome_screen.dart';
-import 'package:warranti_app/service/store_token.dart';
+import 'package:warranti_app/service/token_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,16 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         actions: [
           TextButton(
+            onPressed: logoutUser,
             child: const Text("Logout"),
-            onPressed: () async {
-              await GoogleSigninApi.logout();
-
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                  builder: (context) => const WelcomeScreen(),
-                ),
-              );
-            },
           ),
         ],
       ),
@@ -99,6 +90,16 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       print('Error fetching user: $e');
+    }
+  }
+
+  void logoutUser() async {
+    try {
+      await deleteToken();
+      await GoogleSigninApi.logout();
+      Navigator.of(context).pushNamed('/signin');
+    } catch (e) {
+      print('Error logging out: $e');
     }
   }
 }

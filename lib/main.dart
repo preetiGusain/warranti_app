@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';
 
 void main() {
@@ -12,13 +13,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Warranti',
-        theme: ThemeData(
-          fontFamily: ('inter'),
-          useMaterial3: true,
-        ),
-        home: SplashScreen());
+      debugShowCheckedModeBanner: false,
+      title: 'Warranti',
+      theme: ThemeData(
+        fontFamily: ('inter'),
+        useMaterial3: true,
+      ),
+      home: SplashScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+      },
+    );
   }
 }
 

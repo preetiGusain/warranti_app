@@ -11,41 +11,42 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-        child: Column(
-      children: [
-        Flexible(
-          flex: 8,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: 0,
-              horizontal: 40.0,
-            ),
-            child: Center(
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: const TextSpan(
-                  children: [
-                    TextSpan(
+      child: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 40.0,
+              ),
+              child: Center(
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: const TextSpan(
+                    children: [
+                      TextSpan(
                         text: "Warranti\n",
                         style: TextStyle(
                           fontSize: 45.0,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                        )),
-                    TextSpan(
-                      text: "\nStore, Track and Never Lose a Warranty Again.",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
+                        ),
                       ),
-                    )
-                  ],
+                      TextSpan(
+                        text: "\nStore, Track and Never Lose a Warranty Again.",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Flexible(
+          Flexible(
             flex: 1,
             child: Align(
               alignment: Alignment.bottomRight,
@@ -69,8 +70,10 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ))
-      ],
-    ));
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

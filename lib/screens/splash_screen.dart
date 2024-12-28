@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/welcome_screen.dart';
+import 'package:warranti_app/service/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,19 +13,34 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
 
+    _checkUserAuthentication();
+  }
+
+  Future<void> _checkUserAuthentication() async {
+    bool isSignedIn = await _authService.isUserSignedIn();
+
     Timer(
-        const Duration(seconds: 3),
-        () {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const WelcomeScreen(),
-                  ));
-            });
+      const Duration(seconds: 3),
+      () {
+        if (isSignedIn) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+          );
+        }
+      },
+    );
   }
 
   @override

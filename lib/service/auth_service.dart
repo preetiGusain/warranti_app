@@ -5,6 +5,11 @@ import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/service/token_service.dart';
 
 class AuthService {
+  Future<bool> isUserSignedIn() async {
+    String? token = await getToken();
+    return token != null && token.isNotEmpty;
+  }
+
   Future<bool> signInWithGoogle(BuildContext context) async {
     final user = await GoogleSigninApi.login();
     if (user != null) {

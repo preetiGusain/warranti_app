@@ -1,11 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:warranti_app/api/google_signIn_api.dart';
 import 'package:warranti_app/screens/signup_screen.dart';
-import 'package:warranti_app/service/token_service.dart';
+import 'package:warranti_app/service/auth_service.dart';
 import 'package:warranti_app/theme/theme.dart';
 import 'package:warranti_app/widgets/custom_scaffold.dart';
-import 'package:http/http.dart' as http;
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key});
@@ -16,6 +13,7 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formSignInKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +75,22 @@ class _SigninScreenState extends State<SigninScreen> {
                               ),
                               label: Text(
                                 'Sign in with Google',
-                                style: TextStyle(fontSize: 16,
-                                color: lightColorScheme.primary,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: lightColorScheme.primary,
                                 ),
                               ),
-                              onPressed: signIn,
+                              onPressed: () async {
+                                bool success = await _authService
+                                    .signInWithGoogle(context);
+                                if (!success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Sign-in failed!'),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -236,49 +245,5 @@ class _SigninScreenState extends State<SigninScreen> {
         ],
       ),
     );
-  }
-
-  Future signIn() async {
-    final user = await GoogleSigninApi.login();
-    final status = await fetchTokenFromBackend(user);
-    if (status) {
-      Navigator.of(context).pushNamed('/home');
-    }
-  }
-
-  Future<bool> fetchTokenFromBackend(user) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://warranti-backend.onrender.com/oauth/google/app'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          "id": user.id,
-          "displayName": user.displayName,
-          "email": user.email,
-          "photoUrl": user.photoUrl
-        }),
-      );
-      print("response $response");
-
-      if (response.statusCode == 200) {
-        final body = response.body;
-        print("body $body");
-
-        final json = jsonDecode(body);
-        print("json $json");
-
-        if (json.containsKey('token') && json['token'] != null) {
-          await storeToken(json['token']);
-          return true;
-        }
-      } else {
-        print('Failed to fetch token: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error during request: $e');
-    }
-    return false;
   }
 }

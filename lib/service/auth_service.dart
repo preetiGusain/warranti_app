@@ -40,17 +40,20 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final body = response.body;
-        print("body $body");
+        print("Response body: $body");
 
         final json = jsonDecode(body);
-        print("json $json");
+        print("Decoded JSON: $json");
 
         if (json.containsKey('token') && json['token'] != null) {
           await storeToken(json['token']);
           return true;
+        } else {
+          print('Token not found in response body');
         }
       } else {
-        print('Failed to fetch token: ${response.statusCode}');
+        print('Failed to fetch token, Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error during request: $e');

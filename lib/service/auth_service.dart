@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
+import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 
 class AuthService {
@@ -25,7 +26,7 @@ class AuthService {
   Future<bool> _fetchTokenFromBackend(user) async {
     try {
       final response = await http.post(
-        Uri.parse('https://warranti-backend.onrender.com/oauth/google/app'),
+        Uri.parse('$backend_uri/oauth/google/app'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

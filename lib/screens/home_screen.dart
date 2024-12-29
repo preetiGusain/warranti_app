@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:warranti_app/service/user_service.dart';
+import 'package:warranti_app/service/warranties_service.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,11 +15,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> user = {};
   final UserService userService = UserService();
+  List<dynamic> warranties = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     setUserData();
+    setWarranties();
   }
 
   Future<void> setUserData() async {
@@ -28,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           user = storedUser!;
           print("Fetched user data: $user");
-
         });
       } else {
         await userService.fetchUser();
@@ -45,77 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Screen'),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: logoutUser,
-            child: const Text("Logout"),
-          ),
-        ],
-      ),
-      body: user.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user['profilePicture']),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Text(
-                    'Name: ${user['username']}',
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Email: ${user['email']}',
-                  ),
-                ],
-              ),
-            ),
-    );
+  Future<void> setWarranties() async {
+    try {
+      final fetchedWarranties = await WarrantiesService.fetchWarranties();
+      setState(() {
+        warranties = fetchedWarranties;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print('Error fetching warranties: $e');
+    }
   }
-
-  // void fetchUser() async {
-  //   try {
-  //     String? token = await getToken();
-
-  //     if (token == null) {
-  //       print('No token found');
-  //       return;
-  //     }
-
-  //     final response = await http.get(
-  //       Uri.parse('https://warranti-backend.onrender.com/user/profile'),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //         'Authorization': token,
-  //       },
-  //     );
-  //     if (response.statusCode == 200) {
-  //       final body = response.body;
-  //       final json = jsonDecode(body);
-
-  //       setState(() {
-  //         user = json;
-  //       });
-  //     } else {
-  //       print(
-  //           'Failed to load user profile, Status code: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching user: $e');
-  //   }
-  // }
 
   void logoutUser() async {
     try {
@@ -125,5 +72,110 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print('Error logging out: $e');
     }
+  }
+
+  String formatDate(String date) {
+    try {
+      DateTime parsedDate = DateTime.parse(date);
+      return DateFormat('dd MMM yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Warranties'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: CircleAvatar(
+              radius: 18,
+              backgroundImage:
+                  user.isNotEmpty ? NetworkImage(user['profilePicture']) : null,
+              child: user.isEmpty ? const Icon(Icons.person) : null,
+            ),
+            onPressed: () {},
+          ),
+          TextButton(
+            onPressed: logoutUser,
+            child: const Text("Logout"),
+          ),
+        ],
+      ),
+      body: user.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          itemCount: warranties.length,
+                          itemBuilder: (context, index) {
+                            final warranty = warranties[index];
+
+                            final productName =
+                                warranty['productName'] ?? 'No Product Name';
+                            final purchaseDate =
+                                warranty['purchaseDate'] ?? 'No Purchase Date';
+                            final warrantyDuration =
+                                warranty['warrantyDuration'] ?? 'No Duration';
+                            final warrantyDurationUnit =
+                                warranty['warrantyDurationUnit'] ??
+                                    'No Duration Unit';
+                            final productPhoto =
+                                warranty['productPhoto'] ?? 'No Product Photo';
+                            final status = warranty['status'] ?? 'No Status';
+
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  productPhoto,
+                                  width: 60, 
+                                  height: 60, 
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Text(
+                                productName,
+                                style: const TextStyle(
+                                  fontSize:
+                                      20, 
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Purchased on: ${formatDate(purchaseDate)}',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    'Status: $status',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+    );
   }
 }

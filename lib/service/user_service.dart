@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -28,7 +29,7 @@ class UserService {
       }
 
       final response = await http.get(
-        Uri.parse('https://warranti-backend.onrender.com/user/profile'),
+        Uri.parse('$backend_uri/user/profile'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': token,

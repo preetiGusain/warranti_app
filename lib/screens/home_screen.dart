@@ -158,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         title: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/warranty');
+                            Navigator.pushNamed(context, '/warranty',
+                                arguments: warranty['_id']);
                           },
                           child: Text(
                             productName,

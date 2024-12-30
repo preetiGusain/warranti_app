@@ -10,6 +10,8 @@ class WarrantyScreen extends StatefulWidget {
 class _WarrantyScreenState extends State<WarrantyScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Text("Hello you are in warranty page");
+    final id =
+        ModalRoute.of(context)?.settings.arguments as String;
+    return Text('Hello you are in warranty page $id');
   }
 }

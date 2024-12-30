@@ -195,6 +195,14 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      //Create button
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/create');
+        },
+        tooltip: 'Create Warranty',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

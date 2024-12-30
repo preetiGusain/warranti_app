@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:warranti_app/screens/create_screen.dart';
 import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomeScreen(),
         '/signin': (context) => const SigninScreen(),
+        '/create': (context) => const CreateScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/warranty') {

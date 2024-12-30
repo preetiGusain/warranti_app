@@ -25,7 +25,13 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomeScreen(),
         '/signin': (context) => const SigninScreen(),
-        '/warranty': (context) => const WarrantyScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/warranty') {
+          final value = settings.arguments as String; // Retrieve the value.
+          return MaterialPageRoute(builder: (_) => WarrantyScreen(id: value)); // Pass it to BarPage.
+        }
+        return null; // Let `onUnknownRoute` handle this behavior.
       },
     );
   }

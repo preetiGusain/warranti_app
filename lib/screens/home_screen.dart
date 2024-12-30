@@ -16,7 +16,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> user = {};
   final UserService userService = UserService();
   List<dynamic> warranties = [];
-  bool isLoading = true;
+  bool isUserLoading = true;
+  bool isWarrantiesLoading = true;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (storedUser != null) {
         setState(() {
           user = storedUser!;
+          isUserLoading = false;
           print("Fetched user data: $user");
         });
       } else {
@@ -40,11 +42,15 @@ class _HomeScreenState extends State<HomeScreen> {
         if (storedUser != null) {
           setState(() {
             user = storedUser!;
+            isUserLoading = false;
             print("Fetched user data: $user");
           });
         }
       }
     } catch (e) {
+      setState(() {
+        isUserLoading = false;
+      });
       print('Error setting user data: $e');
     }
   }
@@ -54,11 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
       final fetchedWarranties = await WarrantiesService.fetchWarranties();
       setState(() {
         warranties = fetchedWarranties;
-        isLoading = false;
+        isWarrantiesLoading = false;
       });
     } catch (e) {
       setState(() {
-        isLoading = false;
+        isWarrantiesLoading = false;
       });
       print('Error fetching warranties: $e');
     }
@@ -85,6 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isUserLoading || isWarrantiesLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Warranties'),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Warranties'),
@@ -105,77 +121,79 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: user.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: warranties.length,
-                          itemBuilder: (context, index) {
-                            final warranty = warranties[index];
+      body: Column(
+        children: [
+          Expanded(
+            child: warranties.isEmpty
+                ? const Center(child: Text('No warranties available'))
+                : ListView.builder(
+                    itemCount: warranties.length,
+                    itemBuilder: (context, index) {
+                      final warranty = warranties[index];
 
-                            final productName =
-                                warranty['productName'] ?? 'No Product Name';
-                            final purchaseDate =
-                                warranty['purchaseDate'] ?? 'No Purchase Date';
-                            final warrantyDuration =
-                                warranty['warrantyDuration'] ?? 'No Duration';
-                            final warrantyDurationUnit =
-                                warranty['warrantyDurationUnit'] ??
-                                    'No Duration Unit';
-                            final productPhoto =
-                                warranty['productPhoto'] ?? 'No Product Photo';
-                            final status = warranty['status'] ?? 'No Status';
+                      final productName =
+                          warranty['productName'] ?? 'No Product Name';
+                      final purchaseDate =
+                          warranty['purchaseDate'] ?? 'No Purchase Date';
+                      final warrantyDuration =
+                          warranty['warrantyDuration'] ?? 'No Duration';
+                      final warrantyDurationUnit =
+                          warranty['warrantyDurationUnit'] ??
+                              'No Duration Unit';
+                      final productPhoto =
+                          warranty['productPhoto'] ?? 'No Product Photo';
+                      final status = warranty['status'] ?? 'No Status';
 
-                            return ListTile(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
-                              leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  productPhoto,
-                                  width: 60, 
-                                  height: 60, 
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              title: Text(
-                                productName,
-                                style: const TextStyle(
-                                  fontSize:
-                                      20, 
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Purchased on: ${formatDate(purchaseDate)}',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  Text(
-                                    'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  Text(
-                                    'Status: $status',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            productPhoto,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                ),
-              ],
-            ),
+                        title: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/warranty');
+                          },
+                          child: Text(
+                            productName,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Purchased on: ${formatDate(purchaseDate)}',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            Text(
+                              'Status: $status',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

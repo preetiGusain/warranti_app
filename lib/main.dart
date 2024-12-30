@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';
+import 'package:warranti_app/screens/warranty_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: {
         '/home': (context) => const HomeScreen(),
-        '/signin': (context) => const SigninScreen()
+        '/signin': (context) => const SigninScreen(),
+        '/warranty': (context) => const WarrantyScreen(),
       },
     );
   }

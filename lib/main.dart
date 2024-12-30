@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         if (settings.name == '/warranty') {
           final value = settings.arguments as String; // Retrieve the value.
-          return MaterialPageRoute(builder: (_) => WarrantyScreen(id: value)); // Pass it to BarPage.
+          return MaterialPageRoute(builder: (_) => WarrantyScreen(id: value));
         }
         return null; // Let `onUnknownRoute` handle this behavior.
       },

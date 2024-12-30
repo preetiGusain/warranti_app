@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:warranti_app/constants.dart';
-import 'package:warranti_app/service/token_service.dart';
+import 'package:intl/intl.dart';
 import 'package:warranti_app/service/warranties_service.dart';
 
 class WarrantyScreen extends StatefulWidget {
@@ -16,7 +12,6 @@ class WarrantyScreen extends StatefulWidget {
 
 class _WarrantyScreenState extends State<WarrantyScreen> {
   dynamic warranty;
-
 
   @override
   void initState() {
@@ -37,15 +32,152 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
     }
   }
 
+  String formatDate(String date) {
+    try {
+      // Remove the GMT part for parsing
+      date = date.replaceAll("GMT", "").trim();
+      final DateFormat inputFormat = DateFormat("EEE, dd MMM yyyy HH:mm:ss");
+      final DateTime parsedDate = inputFormat.parse(date);
+      final DateFormat outputFormat = DateFormat('dd/MM/yyyy');
+      return outputFormat.format(parsedDate);
+    } catch (e) {
+      print('Error parsing date: $e');
+      return 'Invalid Date';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Warranty Details'),
+        title: warranty == null
+            ? const Text('Warranty Details')
+            : Text(warranty['productName'] ?? 'Warranty Details'),
       ),
-      body: Center(
-        child: Text('Warranty ID: $warranty}'),
-      ),
+      body: warranty == null
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
+                children: [
+                  // Purchase Date
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Purchase Date:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        formatDate(warranty['purchaseDate']),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Warranty Duration
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Warranty Duration:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        '${warranty['warrantyDuration']} ${warranty['warrantyDurationUnit']}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Warranty Status
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Status:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        warranty['status'] ?? 'N/A',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Product Image
+                  if (warranty['productPhoto'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Product Image:',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        Image.network(
+                          warranty['productPhoto'],
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 10),
+
+                  // Warranty Card Image
+                  if (warranty['warrantyCardPhoto'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Warranty Card Image:',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        Image.network(
+                          warranty['warrantyCardPhoto'],
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 10),
+
+                  // Receipt Image
+                  if (warranty['receiptPhoto'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Receipt Image:',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        Image.network(
+                          warranty['receiptPhoto'],
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
     );
   }
 }

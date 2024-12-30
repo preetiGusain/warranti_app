@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 
@@ -15,6 +17,7 @@ class _CreateScreenState extends State<CreateScreen> {
   DateTime? selectedDate;
   String warrantyDuration = '';
   String selectedUnit = 'Month';
+  File? selectedImage;
 
   Future<void> selectDate(BuildContext context) async {
     final DateTime initialDate = selectedDate ?? DateTime.now();
@@ -68,6 +71,55 @@ class _CreateScreenState extends State<CreateScreen> {
     } catch (error) {
       print('Request failed: $error');
     }
+  }
+
+  Future pickImageFromGallery() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (returnedImage == null) return;
+    setState(() {
+      selectedImage = File(returnedImage!.path);
+    });
+  }
+
+  Future pickImageFromCamera() async {
+    final returnedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (returnedImage == null) return;
+    setState(() {
+      selectedImage = File(returnedImage!.path);
+    });
+  }
+
+  void showImageSourceOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await pickImageFromCamera();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Gallery'),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await pickImageFromGallery();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -158,6 +210,23 @@ class _CreateScreenState extends State<CreateScreen> {
               },
               child: const Text('Save'),
             ),
+            MaterialButton(
+                color: Colors.lightBlue,
+                onPressed: () {
+                  showImageSourceOptions(context);
+                },
+                child: const Text(
+                  "Select Product Image",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                )),
+            const SizedBox(height: 20),
+            selectedImage != null
+                ? Image.file(selectedImage!)
+                : const Text("Please select an Image")
           ],
         ),
       ),

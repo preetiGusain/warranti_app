@@ -46,6 +46,47 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
     }
   }
 
+  Future<void> deleteWarranty() async {
+    try {
+      await WarrantiesService.deleteWarranty(widget.id);
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      print('Error deleting warranty');
+    }
+  }
+
+  Future<void> showDeleteConfirmationDialog(BuildContext context) async {
+    bool? confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure you want to delete?'),
+          content: const Text('This action cannot be undone.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      deleteWarranty();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +94,15 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
         title: warranty == null
             ? const Text('Warranty Details')
             : Text(warranty['productName'] ?? 'Warranty Details'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              showDeleteConfirmationDialog(context);
+            },
+          ),
+        ],
       ),
       body: warranty == null
           ? const Center(child: CircularProgressIndicator())

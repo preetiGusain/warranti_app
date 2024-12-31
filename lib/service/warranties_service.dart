@@ -118,13 +118,16 @@ class WarrantiesService {
         ..fields['warrantyDurationUnit'] = warrantyDurationUnit;
 
       if (productPhoto != null) {
-        request.files.add(await http.MultipartFile.fromPath('product', productPhoto.path));
+        request.files.add(
+            await http.MultipartFile.fromPath('product', productPhoto.path));
       }
       if (warrantyCardPhoto != null) {
-        request.files.add(await http.MultipartFile.fromPath('warrantyCard', warrantyCardPhoto.path));
+        request.files.add(await http.MultipartFile.fromPath(
+            'warrantyCard', warrantyCardPhoto.path));
       }
       if (receiptPhoto != null) {
-        request.files.add(await http.MultipartFile.fromPath('receipt', receiptPhoto.path));
+        request.files.add(
+            await http.MultipartFile.fromPath('receipt', receiptPhoto.path));
       }
 
       final response = await request.send();
@@ -144,4 +147,28 @@ class WarrantiesService {
     }
   }
 
+  // Delete warranty
+  static Future<dynamic> deleteWarranty(String id) async {
+    try {
+      String? token = await getToken();
+
+      if (token == null) {
+        print('No token found');
+        return [];
+      }
+      final response = await http.delete(
+        Uri.parse('$backend_uri/warranty/$id'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': token,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Warranty deleted successfully');
+      }
+    } catch (e) {
+      print('Error deleting warranty: $e');
+    }
+  }
 }

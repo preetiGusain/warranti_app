@@ -107,12 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: CircleAvatar(
-              radius: 18,
-              backgroundImage:
-                  user.isNotEmpty ? NetworkImage(user['profilePicture']) : null,
-              child: user.isEmpty ? const Icon(Icons.person) : null,
-            ),
+            icon: Stack(clipBehavior: Clip.none, children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundImage: user.isNotEmpty
+                    ? NetworkImage(user['profilePicture'])
+                    : null,
+                child: user.isEmpty ? const Icon(Icons.person) : null,
+              ),
+              if (isUserLoading)
+                const Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ]),
             onPressed: () {},
           ),
           TextButton(

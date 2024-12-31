@@ -130,12 +130,48 @@ class _CreateScreenState extends State<CreateScreen> {
     });
   }
 
+  Future<void> showDiscardDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Discard Changes'),
+          content: const Text('Are you sure you want to discard your changes?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Warranty'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              showDiscardDialog();
+            },
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(

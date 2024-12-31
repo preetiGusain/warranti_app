@@ -69,7 +69,15 @@ class _CreateScreenState extends State<CreateScreen> {
         );
       }
       setState(() {
-        savingWarranty = false;
+        savingWarranty = true;
+      });
+      Future.delayed(const Duration(seconds: 2), () {
+        setState(() {
+          savingWarranty = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Warranty saved!')),
+        );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,12 +132,6 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
-  void goToNext() {
-    setState(() {
-      step += 1;
-    });
-  }
-
   Future<void> showDiscardDialog() async {
     return showDialog<void>(
       context: context,
@@ -158,11 +160,24 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
+  void goToNext() {
+    setState(() {
+      step += 1;
+    });
+  }
+
+  void goToPrevious() {
+    setState(() {
+      step -= 1;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Warranty'),
+        automaticallyImplyLeading: false,
         centerTitle: true,
         actions: [
           IconButton(
@@ -328,23 +343,34 @@ class _CreateScreenState extends State<CreateScreen> {
 
               const SizedBox(height: 20),
 
-              // Submit button - step 3
-              if (step == 3) ...[
-                ElevatedButton(
-                  onPressed: savingWarranty ? null : handleSubmit,
-                  child: savingWarranty
-                      ? const CircularProgressIndicator()
-                      : const Text('Save Warranty'),
-                ),
-              ],
+              Row(
+                children: [
+                  // Back button for steps 2 and 3
+                  if (step > 1)
+                    ElevatedButton(
+                      onPressed: goToPrevious,
+                      child: const Text('Back'),
+                    ),
 
-              // "Next" button
-              if (step < 3) ...[
-                ElevatedButton(
-                  onPressed: goToNext,
-                  child: const Text('Next'),
-                ),
-              ],
+                  if (step > 1) const Spacer(),
+
+                  // Next button for steps 1 and 2
+                  if (step < 3)
+                    ElevatedButton(
+                      onPressed: goToNext,
+                      child: const Text('Next'),
+                    ),
+
+                  // Save button for step 3
+                  if (step == 3)
+                    ElevatedButton(
+                      onPressed: savingWarranty ? null : handleSubmit,
+                      child: savingWarranty
+                          ? const CircularProgressIndicator()
+                          : const Text('Save'),
+                    ),
+                ],
+              ),
             ],
           ),
         ),

@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:http/http.dart' as http;
 
 class WarrantiesService {
-  /// Gets all warranties
+  // Gets all warranties
   static Future<List<dynamic>> fetchWarranties() async {
     try {
       String? token = await getToken();
@@ -48,7 +49,7 @@ class WarrantiesService {
     }
   }
 
-  /// Gets warranty by Id
+  // Gets warranty by Id
   static Future<dynamic> fetchWarranty(String id) async {
     try {
       String? token = await getToken();
@@ -90,4 +91,57 @@ class WarrantiesService {
       return [];
     }
   }
+
+  // Creates new warranty
+  static Future<bool> createWarranty({
+    required String productName,
+    required String purchaseDate,
+    required String warrantyDuration,
+    required String warrantyDurationUnit,
+    File? productPhoto,
+    File? warrantyCardPhoto,
+    File? receiptPhoto,
+  }) async {
+    try {
+      String? token = await getToken();
+      if (token == null) {
+        print('No token found');
+        return false;
+      }
+
+      final url = Uri.parse('$backend_uri/warranty/create');
+      final request = http.MultipartRequest('POST', url)
+        ..headers.addAll({'Authorization': token})
+        ..fields['productName'] = productName
+        ..fields['purchaseDate'] = purchaseDate
+        ..fields['warrantyDuration'] = warrantyDuration
+        ..fields['warrantyDurationUnit'] = warrantyDurationUnit;
+
+      if (productPhoto != null) {
+        request.files.add(await http.MultipartFile.fromPath('product', productPhoto.path));
+      }
+      if (warrantyCardPhoto != null) {
+        request.files.add(await http.MultipartFile.fromPath('warrantyCard', warrantyCardPhoto.path));
+      }
+      if (receiptPhoto != null) {
+        request.files.add(await http.MultipartFile.fromPath('receipt', receiptPhoto.path));
+      }
+
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        print('Warranty created successfully');
+        return true;
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Response Body: ${responseBody.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error creating warranty: $e');
+      return false;
+    }
+  }
+
 }

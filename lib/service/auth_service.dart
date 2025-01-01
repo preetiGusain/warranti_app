@@ -66,6 +66,42 @@ class AuthService {
   }
 
   // Sign up with Email/Password
+  Future<bool> loginWithEmailPassword(String email, String password,
+      BuildContext context) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$backend_uri/auth/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "email": email,
+          "password": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final body = response.body;
+        final json = jsonDecode(body);
+
+        if (json.containsKey('token') && json['token'] != null) {
+          await storeToken(json['token']);
+          Navigator.of(context).pushNamed('/home');
+          return true;
+        } else {
+          print('Token not found in response body');
+        }
+      } else {
+        print('Failed to sign up, Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during signup: $e');
+    }
+    return false;
+  }
+
+  // Sign up with Email/Password
   Future<bool> signUpWithEmail(String fullName, String email, String password,
       BuildContext context) async {
     try {

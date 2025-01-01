@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
+import 'package:warranti_app/service/auth_service.dart';
 import 'package:warranti_app/theme/theme.dart';
 import 'package:warranti_app/widgets/custom_scaffold.dart';
 
@@ -13,6 +14,11 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formSignInKey = GlobalKey<FormState>();
+  String username = '';
+  String email = '';
+  String password = '';
+
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +58,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
+                      // Google signup button
                       SizedBox(
                         width: double.infinity,
                         child: Row(
@@ -92,7 +99,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
+                      //Full name
                       TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            username = value;
+                          });
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your name';
@@ -111,17 +124,18 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black12,
-                            ),
-                          ),
                         ),
                       ),
                       const SizedBox(
                         height: 25,
                       ),
+                      // Email
                       TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            email = value;
+                          });
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Email';
@@ -140,19 +154,20 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black12,
-                            ),
-                          ),
                         ),
                       ),
                       const SizedBox(
                         height: 25.0,
                       ),
+                      // Password
                       TextFormField(
                         obscureText: true,
                         obscuringCharacter: '*',
+                        onChanged: (value) {
+                          setState(() {
+                            password = value;
+                          });
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Password';
@@ -171,20 +186,34 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black12,
-                            ),
-                          ),
                         ),
                       ),
                       const SizedBox(
                         height: 40.0,
                       ),
+                      // Sign up button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (_formSignInKey.currentState?.validate() ??
+                                false) {
+                              final success =
+                                  await _authService.signUpWithEmail(
+                                username,
+                                email,
+                                password,
+                                context,
+                              );
+                              if (!success) {
+                                // Error message if signup fails
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Signup failed')),
+                                );
+                              }
+                            }
+                          },
                           child: const Text("Sign up"),
                         ),
                       ),

@@ -6,11 +6,13 @@ import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 
 class AuthService {
+  // Checks if the user is signed in by verifying the stored token
   Future<bool> isUserSignedIn() async {
     String? token = await getToken();
     return token != null && token.isNotEmpty;
   }
 
+  // Sign up with Google
   Future<bool> signInWithGoogle(BuildContext context) async {
     final user = await GoogleSigninApi.login();
     if (user != null) {
@@ -23,6 +25,7 @@ class AuthService {
     return false;
   }
 
+  // Fetch token from the backend after Google login
   Future<bool> _fetchTokenFromBackend(user) async {
     try {
       final response = await http.post(
@@ -58,6 +61,43 @@ class AuthService {
       }
     } catch (e) {
       print('Error during request: $e');
+    }
+    return false;
+  }
+
+  // Sign up with Email/Password
+  Future<bool> signUpWithEmail(String fullName, String email, String password,
+      BuildContext context) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$backend_uri/auth/signup'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "username": fullName,
+          "email": email,
+          "password": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final body = response.body;
+        final json = jsonDecode(body);
+
+        if (json.containsKey('token') && json['token'] != null) {
+          await storeToken(json['token']);
+          Navigator.of(context).pushNamed('/home');
+          return true;
+        } else {
+          print('Token not found in response body');
+        }
+      } else {
+        print('Failed to sign up, Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error during signup: $e');
     }
     return false;
   }

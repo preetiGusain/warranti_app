@@ -37,7 +37,7 @@ class AuthService {
           "id": user.id,
           "displayName": user.displayName,
           "email": user.email,
-          "photoUrl": user.photoUrl
+          "photoUrl": user.photoUrl ?? ''
         }),
       );
       print("Response: $response");
@@ -102,7 +102,7 @@ class AuthService {
   }
 
   // Sign up with Email/Password
-  Future<bool> signUpWithEmail(String fullName, String email, String password,
+  Future<bool> signUpWithEmailPassword(String fullName, String email, String password,
       BuildContext context) async {
     try {
       final response = await http.post(

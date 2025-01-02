@@ -60,25 +60,20 @@ class _CreateScreenState extends State<CreateScreen> {
         warrantyCardPhoto: warrantyCardPhoto,
         receiptPhoto: receiptPhoto,
       );
+      setState(() {
+        savingWarranty = false;
+      });
 
       if (success) {
         Navigator.pushNamed(context, '/home');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Warranty saved successfully!')),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to create warranty')),
         );
       }
-      setState(() {
-        savingWarranty = true;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          savingWarranty = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Warranty saved!')),
-        );
-      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),

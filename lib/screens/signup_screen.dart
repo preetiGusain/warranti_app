@@ -23,9 +23,18 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _signUp() async {
     if (_formSignUpKey.currentState?.validate() ?? false) {
-      bool success = await _authService.signUpWithEmailPassword(username, email, password, context);
+      bool success = await _authService.signUpWithEmailPassword(
+          username, email, password, context);
       if (!success) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign-up failed!')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Sign-up failed!'),
+          backgroundColor: Colors.red,
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Sign-up successful!'),
+          backgroundColor: Colors.green,
+        ));
       }
     }
   }
@@ -77,8 +86,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             side: const BorderSide(color: Colors.grey),
                           ),
                           icon: _isGoogleLoading
-                              ? const CircularProgressIndicator(color: Colors.black12, strokeWidth: 3)
-                              : Image.asset('assets/images/google_logo.png', height: 18),
+                              ? const CircularProgressIndicator(
+                                  color: Colors.black12, strokeWidth: 3)
+                              : Image.asset('assets/images/google_logo.png',
+                                  height: 18),
                           label: Text(
                             'Sign up with Google',
                             style: TextStyle(
@@ -89,10 +100,22 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: () async {
                             if (_isGoogleLoading) return;
                             setState(() => _isGoogleLoading = true);
-                            bool success = await _authService.signInWithGoogle(context);
+                            bool success =
+                                await _authService.signInWithGoogle(context);
                             setState(() => _isGoogleLoading = false);
                             if (!success) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sign-up failed!')));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text('Google sign-up failed!'),
+                                backgroundColor: Colors.red,
+                              ));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Signed up with Google!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
                             }
                           },
                         ),
@@ -204,11 +227,13 @@ class _SignupScreenState extends State<SignupScreen> {
                           onPressed: _isSignupLoading
                               ? null
                               : () async {
-                                  if (_formSignUpKey.currentState?.validate() ?? false) {
+                                  if (_formSignUpKey.currentState?.validate() ??
+                                      false) {
                                     setState(() {
                                       _isSignupLoading = true;
                                     });
-                                    final success = await _authService.signUpWithEmailPassword(
+                                    final success = await _authService
+                                        .signUpWithEmailPassword(
                                       username,
                                       email,
                                       password,
@@ -218,13 +243,23 @@ class _SignupScreenState extends State<SignupScreen> {
                                       _isSignupLoading = false;
                                     });
                                     if (!success) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Signup failed')));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text('Signup failed'),
+                                        backgroundColor: Colors.red,
+                                      ));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text('Signup successful!'),
+                                        backgroundColor: Colors.green,
+                                      ));
                                     }
                                   }
                                 },
                           child: _isSignupLoading
-                              ? const CircularProgressIndicator(color: Colors.black12)
+                              ? const CircularProgressIndicator(
+                                  color: Colors.black12)
                               : const Text("Sign up"),
                         ),
                       ),

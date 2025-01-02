@@ -12,6 +12,7 @@ class WarrantyScreen extends StatefulWidget {
 
 class _WarrantyScreenState extends State<WarrantyScreen> {
   dynamic warranty;
+  bool _isDeleting = false;
 
   @override
   void initState() {
@@ -48,11 +49,30 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
 
   Future<void> deleteWarranty() async {
     try {
+      setState(() {
+        _isDeleting = true;
+      });
+
       await WarrantiesService.deleteWarranty(widget.id);
+
+      setState(() {
+        _isDeleting = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Warranty deleted successfully!')),
+    );
+    
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
+      setState(() {
+        _isDeleting = false;
+      });
       print('Error deleting warranty');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete warranty!')),
+      );
     }
   }
 
@@ -72,10 +92,15 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
               },
             ),
             TextButton(
-              child: const Text('Delete'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
+              onPressed: _isDeleting
+                  ? null
+                  : () {
+                      Navigator.of(context).pop(true);
+                    },
+              child: _isDeleting
+                  ? const CircularProgressIndicator(
+                      color: Colors.black12, strokeWidth: 2)
+                  : const Text('Delete'),
             ),
           ],
         );

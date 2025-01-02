@@ -18,16 +18,42 @@ class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _isGoogleLoading = false;
+  bool _isSigninLoading = false;
+
   void _signIn() async {
     if (_formSignInKey.currentState?.validate() ?? false) {
       String email = _emailController.text;
       String password = _passwordController.text;
 
+      setState(() {
+        _isSigninLoading = true;
+      });
+
       bool success =
           await _authService.loginWithEmailPassword(email, password, context);
-      if (!success) {
+      setState(() {
+        _isSigninLoading = false;
+      });
+
+      if (success) {
+        // Show success Snackbar
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign-in failed!')),
+          const SnackBar(
+            content: Text('Signed in successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Delay before navigating to home
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sign-in failed!'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -72,50 +98,71 @@ class _SigninScreenState extends State<SigninScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
+
+                      //Google Signin button
                       SizedBox(
                         width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.black,
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.all(10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                side: BorderSide(color: Colors.grey),
-                              ),
-                              icon: Image.asset(
-                                'assets/images/google_logo.png',
-                                height: 18,
-                              ),
-                              label: Text(
-                                'Sign in with Google',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: lightColorScheme.primary,
-                                ),
-                              ),
-                              onPressed: () async {
-                                bool success = await _authService
-                                    .signInWithGoogle(context);
-                                if (!success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Sign-in failed!'),
-                                    ),
-                                  );
-                                }
-                              },
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.all(10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                          ],
+                            side: BorderSide(color: Colors.grey),
+                          ),
+                          icon: _isGoogleLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.black12, strokeWidth: 3)
+                              : Image.asset('assets/images/google_logo.png',
+                                  height: 18),
+                          label: Text(
+                            'Sign in with Google',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: lightColorScheme.primary,
+                            ),
+                          ),
+                          onPressed: () async {
+                            if (_isGoogleLoading) return;
+
+                            setState(() {
+                              _isGoogleLoading = true;
+                            });
+
+                            bool success =
+                                await _authService.signInWithGoogle(context);
+
+                            setState(() {
+                              _isGoogleLoading = false;
+                            });
+
+                            if (success) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Signed in with Google successfully!'),
+                                  backgroundColor: Colors.lightGreen,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Google sign-in failed!'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
+
                       const SizedBox(
                         height: 40.0,
                       ),
+
+                      // Email and password sign-in option
                       Text(
                         'Or use your email and password',
                         style: TextStyle(
@@ -127,13 +174,13 @@ class _SigninScreenState extends State<SigninScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
+                      //Email
                       TextFormField(
                         controller: _emailController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          // Basic email validation regex
                           if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                             return 'Please enter a valid email address';
                           }
@@ -152,9 +199,11 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                         ),
                       ),
+
                       const SizedBox(
                         height: 25.0,
                       ),
+                      //Password
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
@@ -184,16 +233,26 @@ class _SigninScreenState extends State<SigninScreen> {
                       const SizedBox(
                         height: 40.0,
                       ),
+                      //Sign-in button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _signIn,
-                          child: const Text("Sign In"),
+                          onPressed: _isSigninLoading
+                              ? null
+                              : () async {
+                                  _signIn();
+                                },
+                          child: _isSigninLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Sign In"),
                         ),
                       ),
+
                       const SizedBox(
                         height: 25.0,
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -217,9 +276,11 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                         ],
                       ),
+
                       const SizedBox(
                         height: 25.0,
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -185,7 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.deepPurple,
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 ),
                 onPressed: () {
                   logoutUser();
@@ -228,50 +229,74 @@ class _HomeScreenState extends State<HomeScreen> {
                           warranty['productPhoto'] ?? 'No Product Photo';
                       final status = warranty['status'] ?? 'No Status';
 
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 16),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            productPhoto,
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
+                      return MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                          });
+                        },
+                        child: Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ),
-                        title: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/warranty',
-                                arguments: warranty['_id']);
-                          },
-                          child: Text(
-                            productName,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Purchased on: ${formatDate(purchaseDate)}',
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                            Text(
-                              'Status: $status',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                          margin: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/warranty',
+                                  arguments: warranty['_id']);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      productPhoto,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          productName,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Purchased on: ${formatDate(purchaseDate)}',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        Text(
+                                          'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        Text(
+                                          'Status: $status',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       );
                     },
@@ -279,7 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      //Create button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/create');

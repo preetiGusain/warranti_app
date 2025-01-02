@@ -18,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> warranties = [];
   bool isUserLoading = true;
   bool isWarrantiesLoading = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -93,15 +94,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     if (isUserLoading || isWarrantiesLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Warranties'),
-          centerTitle: true,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
+          appBar: AppBar(
+            title: const Text('Warranties'),
+            centerTitle: true,
+          ),
+          body: const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text('Loading your warranties...'),
+              ],
+            ),
+          ));
     }
 
     return Scaffold(
+      key: _scaffoldKey,
+      //appbar
       appBar: AppBar(
         title: const Text('Warranties'),
         automaticallyImplyLeading: false,
@@ -131,14 +142,61 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
             ]),
-            onPressed: () {},
-          ),
-          TextButton(
-            onPressed: logoutUser,
-            child: const Text("Logout"),
+            onPressed: () {
+              _scaffoldKey.currentState?.openEndDrawer();
+            },
           ),
         ],
       ),
+      // Right Drawer
+      endDrawer: Drawer(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                UserAccountsDrawerHeader(
+                  accountName: Text(user['username'] ?? 'Guest'),
+                  accountEmail: Text(user['email'] ?? 'Not logged in'),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage: user.isNotEmpty
+                        ? NetworkImage(user['profilePicture'])
+                        : null,
+                    child: user.isEmpty ? const Icon(Icons.person) : null,
+                  ),
+                ),
+                Positioned(
+                  top: 20,
+                  right: 10,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      _scaffoldKey.currentState?.closeEndDrawer();
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_circle),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.pushNamed(
+                    context, '/profile'); // Navigate to profile page
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                logoutUser();
+              },
+            ),
+          ],
+        ),
+      ),
+
+      //body
       body: Column(
         children: [
           Expanded(

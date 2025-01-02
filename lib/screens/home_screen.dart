@@ -177,20 +177,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Profile'),
-              onTap: () {
-                Navigator.pushNamed(
-                    context, '/profile'); // Navigate to profile page
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                logoutUser();
-              },
+            Expanded(child: Container()),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                ),
+                onPressed: () {
+                  logoutUser();
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Logout', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

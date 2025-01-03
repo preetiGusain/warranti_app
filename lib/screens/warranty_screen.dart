@@ -35,14 +35,9 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
 
   String formatDate(String date) {
     try {
-      // Remove the GMT part for parsing
-      date = date.replaceAll("GMT", "").trim();
-      final DateFormat inputFormat = DateFormat("EEE, dd MMM yyyy HH:mm:ss");
-      final DateTime parsedDate = inputFormat.parse(date);
-      final DateFormat outputFormat = DateFormat('dd/MM/yyyy');
-      return outputFormat.format(parsedDate);
+      DateTime parsedDate = DateTime.parse(date);
+      return DateFormat('dd MMM yyyy').format(parsedDate);
     } catch (e) {
-      print('Error parsing date: $e');
       return 'Invalid Date';
     }
   }
@@ -60,9 +55,9 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Warranty deleted successfully!')),
-    );
-    
+        const SnackBar(content: Text('Warranty deleted successfully!')),
+      );
+
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
@@ -146,9 +141,11 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        formatDate(warranty['purchaseDate']),
+                        warranty['purchaseDate'] != null
+                            ? formatDate(warranty['purchaseDate'])
+                            : 'Invalid Date',
                         style: const TextStyle(fontSize: 16),
-                      ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -167,6 +164,26 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                         '${warranty['warrantyDuration']} ${warranty['warrantyDurationUnit']}',
                         style: const TextStyle(fontSize: 16),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Warranty End Date
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Warranty Expiry:',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        warranty['warrantyEndDate'] != null
+                            ? formatDate(warranty['warrantyEndDate'])
+                            : 'Invalid Date',
+                        style: const TextStyle(fontSize: 16),
+                      )
                     ],
                   ),
                   const SizedBox(height: 10),

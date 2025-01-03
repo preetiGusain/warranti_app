@@ -229,72 +229,65 @@ class _HomeScreenState extends State<HomeScreen> {
                           warranty['productPhoto'] ?? 'No Product Photo';
                       final status = warranty['status'] ?? 'No Status';
 
-                      return MouseRegion(
-                        onEnter: (_) {
-                          setState(() {
-                          });
-                        },
-                        onExit: (_) {
-                          setState(() {
-                          });
-                        },
-                        child: Card(
-                          elevation: 5,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          margin: const EdgeInsets.all(10),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/warranty',
-                                  arguments: warranty['_id']);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.network(
-                                      productPhoto,
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    ),
+                      Color statusColor = (status == 'Expired') ? Colors.red : Colors.green;
+
+                      return Card(
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        margin: const EdgeInsets.all(10),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/warranty',
+                                arguments: warranty['_id']);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    productPhoto,
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
                                   ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          productName,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        productName,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        Text(
-                                          'Purchased on: ${formatDate(purchaseDate)}',
-                                          style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        'Purchased on: ${formatDate(purchaseDate)}',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        '$status',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: statusColor,
                                         ),
-                                        Text(
-                                          'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                        Text(
-                                          'Status: $status',
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: TextButton(
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: const Color.fromARGB(255, 119, 63, 176),
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 ),

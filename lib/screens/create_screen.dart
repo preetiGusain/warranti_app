@@ -193,7 +193,7 @@ class _CreateScreenState extends State<CreateScreen> {
               LinearProgressIndicator(
                 value: step / 3,
                 backgroundColor: Colors.grey[300],
-                color: Colors.blue,
+                color: const Color.fromARGB(255, 113, 56, 151),
               ),
               const SizedBox(height: 20),
               // Step 1:
@@ -219,7 +219,7 @@ class _CreateScreenState extends State<CreateScreen> {
                       )
                     : const Text("No Product Image Selected"),
                 MaterialButton(
-                  color: Colors.lightBlue,
+                  color: const Color.fromARGB(255, 130, 77, 160),
                   onPressed: () {
                     showImageSourceOptions(context, 'product');
                   },
@@ -263,7 +263,7 @@ class _CreateScreenState extends State<CreateScreen> {
                       )
                     : const Text("No Receipt Image Selected"),
                 MaterialButton(
-                  color: Colors.lightBlue,
+                  color: const Color.fromARGB(255, 130, 77, 160),
                   onPressed: () {
                     showImageSourceOptions(context, 'receipt');
                   },
@@ -321,7 +321,7 @@ class _CreateScreenState extends State<CreateScreen> {
                       )
                     : const Text("No Warranty Card Image Selected"),
                 MaterialButton(
-                  color: Colors.lightBlue,
+                  color: const Color.fromARGB(255, 130, 77, 160),
                   onPressed: () {
                     showImageSourceOptions(context, 'warrantyCard');
                   },

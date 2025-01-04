@@ -97,7 +97,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                     },
               child: _isDeleting
                   ? const CircularProgressIndicator(
-                      color: Colors.black12, strokeWidth: 2)
+                      color: Color.fromARGB(255, 130, 77, 160), strokeWidth: 2)
                   : const Text('Delete'),
             ),
           ],

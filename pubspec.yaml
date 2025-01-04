@@ -52,7 +52,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/warranti.png"
+  image_path: "assets/images/logo.png"
   adaptive_icon_background: "#ffffff"
   adaptive_icon_foreground: "assets/images/play_store_512.png"
 

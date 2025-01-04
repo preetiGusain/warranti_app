@@ -114,7 +114,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                           icon: _isGoogleLoading
                               ? const CircularProgressIndicator(
-                                  color: Colors.black12, strokeWidth: 3)
+                                  color: Color.fromARGB(255, 130, 77, 160), strokeWidth: 3)
                               : Image.asset('assets/images/google_logo.png',
                                   height: 18),
                           label: Text(
@@ -244,7 +244,7 @@ class _SigninScreenState extends State<SigninScreen> {
                                 },
                           child: _isSigninLoading
                               ? const CircularProgressIndicator(
-                                  color: Colors.white)
+                                  color: Color.fromARGB(255, 130, 77, 160))
                               : const Text("Sign In"),
                         ),
                       ),

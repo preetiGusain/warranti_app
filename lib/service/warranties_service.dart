@@ -8,7 +8,7 @@ class WarrantiesService {
   // Gets all warranties
   static Future<List<dynamic>> fetchWarranties() async {
     try {
-      String? token = await getToken();
+      String? token = await TokenService.getToken();
 
       if (token == null) {
         print('No token found');
@@ -52,7 +52,7 @@ class WarrantiesService {
   // Gets warranty by Id
   static Future<dynamic> fetchWarranty(String id) async {
     try {
-      String? token = await getToken();
+      String? token = await TokenService.getToken();
 
       if (token == null) {
         print('No token found');
@@ -103,7 +103,7 @@ class WarrantiesService {
     File? receiptPhoto,
   }) async {
     try {
-      String? token = await getToken();
+      String? token = await TokenService.getToken();
       if (token == null) {
         print('No token found');
         return false;
@@ -150,7 +150,7 @@ class WarrantiesService {
   // Delete warranty
   static Future<dynamic> deleteWarranty(String id) async {
     try {
-      String? token = await getToken();
+      String? token = await TokenService.getToken();
 
       if (token == null) {
         print('No token found');

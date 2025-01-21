@@ -8,7 +8,7 @@ import 'package:warranti_app/service/token_service.dart';
 class AuthService {
   // Checks if the user is signed in by verifying the stored token
   Future<bool> isUserSignedIn() async {
-    String? token = await getToken();
+    String? token = await TokenService.getToken();
     return token != null && token.isNotEmpty;
   }
 
@@ -50,7 +50,7 @@ class AuthService {
         print("Decoded JSON: $json");
 
         if (json.containsKey('token') && json['token'] != null) {
-          await storeToken(json['token']);
+          await TokenService.storeToken(json['token']);
           return true;
         } else {
           print('Token not found in response body');
@@ -85,7 +85,7 @@ class AuthService {
         final json = jsonDecode(body);
 
         if (json.containsKey('token') && json['token'] != null) {
-          await storeToken(json['token']);
+          await TokenService.storeToken(json['token']);
           Navigator.of(context).pushNamed('/home');
           return true;
         } else {
@@ -122,7 +122,7 @@ class AuthService {
         final json = jsonDecode(body);
 
         if (json.containsKey('token') && json['token'] != null) {
-          await storeToken(json['token']);
+          await TokenService.storeToken(json['token']);
           Navigator.of(context).pushNamed('/home');
           return true;
         } else {

@@ -21,7 +21,7 @@ class UserService {
 
   Future<void> fetchUser() async {
     try {
-      String? token = await getToken();
+      String? token = await TokenService.getToken();
 
       if (token == null) {
         print('No token found');
@@ -72,6 +72,18 @@ class UserService {
       print('User stored successfully');
     } catch (e) {
       print('Error storing user: $e');
+    }
+  }
+
+  Future<void> deleteUserData() async {
+    try {
+      await storage.delete(key: 'user');
+      print('User data deleted from storage');
+
+      await TokenService.deleteToken();
+      print('Token deleted from storage');
+    } catch (e) {
+      print('Error deleting user data: $e');
     }
   }
 }

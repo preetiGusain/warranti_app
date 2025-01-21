@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/service/token_service.dart';
@@ -32,15 +34,18 @@ class _HomeScreenState extends State<HomeScreen> {
       Map<String, dynamic>? storedUser = await userService.getStoredUser();
 
       if (storedUser != null) {
+        print("User fetched from storage: $storedUser");
         setState(() {
           user = storedUser!;
           isUserLoading = false;
           print("Fetched user data: $user");
         });
       } else {
+        print("No user data in storage, fetching from API...");
         await userService.fetchUser();
         storedUser = await userService.getStoredUser();
         if (storedUser != null) {
+          print("User fetched after API call: $storedUser");
           setState(() {
             user = storedUser!;
             isUserLoading = false;
@@ -73,9 +78,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void logoutUser() async {
     try {
-      await deleteToken();
+      await TokenService.deleteToken();
+      await userService.deleteUserData();
       await GoogleSigninApi.logout();
-      Navigator.of(context).pushNamed('/signin');
+      setState(() {
+        user = {};
+      });
+      Navigator.of(context).pushNamed('/signin').then((_) {
+        // Reload user data after returning from sign-in
+        setUserData();
+      });
     } catch (e) {
       print('Error logging out: $e');
     }
@@ -229,7 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           warranty['productPhoto'] ?? 'No Product Photo';
                       final status = warranty['status'] ?? 'No Status';
 
-                      Color statusColor = (status == 'Expired') ? Colors.red : Colors.green;
+                      Color statusColor =
+                          (status == 'Expired') ? Colors.red : Colors.green;
 
                       return Card(
                         elevation: 5,

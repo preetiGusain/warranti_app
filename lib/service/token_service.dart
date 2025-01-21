@@ -1,17 +1,23 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-const storage = FlutterSecureStorage();
+class TokenService {
+  // Create an instance of FlutterSecureStorage
+  static final FlutterSecureStorage _storage = FlutterSecureStorage();
 
-Future<void> storeToken(String token) async {
-  await storage.write(key: 'jwt_token', value: token);
-  print('Token stored successfully');
-}
+  // Store the token
+  static Future<void> storeToken(String token) async {
+    await _storage.write(key: 'jwt_token', value: token);
+    print('Token stored successfully');
+  }
 
-Future<String?> getToken() async {
-  return await storage.read(key: 'jwt_token');
-}
+  // Retrieve the token
+  static Future<String?> getToken() async {
+    return await _storage.read(key: 'jwt_token');
+  }
 
-Future<void> deleteToken() async {
-  print('Deleting token');
-  return await storage.delete(key: 'jwt_token');
+  // Delete the token
+  static Future<void> deleteToken() async {
+    print('Deleting token');
+    return await _storage.delete(key: 'jwt_token');
+  }
 }

@@ -66,8 +66,8 @@ class AuthService {
   }
 
   // Sign up with Email/Password
-  Future<bool> loginWithEmailPassword(String email, String password,
-      BuildContext context) async {
+  Future<bool> loginWithEmailPassword(
+      String email, String password, BuildContext context) async {
     try {
       final response = await http.post(
         Uri.parse('$backend_uri/auth/login'),
@@ -102,8 +102,15 @@ class AuthService {
   }
 
   // Sign up with Email/Password
-  Future<bool> signUpWithEmailPassword(String fullName, String email, String password,
-      BuildContext context) async {
+  Future<bool> signUpWithEmailPassword(String username, String email,
+      String password, BuildContext context) async {
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please fill in all fields!'),
+        backgroundColor: Colors.red,
+      ));
+      return false;
+    }
     try {
       final response = await http.post(
         Uri.parse('$backend_uri/auth/signup'),
@@ -111,7 +118,7 @@ class AuthService {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          "username": fullName,
+          "username": username,
           "email": email,
           "password": password,
         }),
@@ -126,6 +133,10 @@ class AuthService {
           Navigator.of(context).pushNamed('/home');
           return true;
         } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Signup failed'),
+            backgroundColor: Colors.red,
+          ));
           print('Token not found in response body');
         }
       } else {

@@ -134,10 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Stack(clipBehavior: Clip.none, children: [
               CircleAvatar(
                 radius: 18,
-                backgroundImage: user.isNotEmpty
-                    ? NetworkImage(user['profilePicture'])
+                backgroundImage:
+                    user.isNotEmpty && user['profilePicture'] != null
+                        ? NetworkImage(user['profilePicture'])
+                        : null,
+                child: user.isEmpty || user['profilePicture'] == null
+                    ? const Icon(Icons.person)
                     : null,
-                child: user.isEmpty ? const Icon(Icons.person) : null,
               ),
               if (isUserLoading)
                 const Positioned.fill(
@@ -170,10 +173,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   accountName: Text(user['username'] ?? 'Guest'),
                   accountEmail: Text(user['email'] ?? 'Not logged in'),
                   currentAccountPicture: CircleAvatar(
-                    backgroundImage: user.isNotEmpty
-                        ? NetworkImage(user['profilePicture'])
+                    backgroundImage:
+                        user.isNotEmpty && user['profilePicture'] != null
+                            ? NetworkImage(user['profilePicture'])
+                            : null,
+                    child: user.isEmpty || user['profilePicture'] == null
+                        ? const Icon(Icons.person)
                         : null,
-                    child: user.isEmpty ? const Icon(Icons.person) : null,
                   ),
                 ),
                 Positioned(

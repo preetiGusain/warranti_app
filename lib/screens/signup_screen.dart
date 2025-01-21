@@ -21,23 +21,6 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isGoogleLoading = false;
   bool _isSignupLoading = false;
 
-  void _signUp() async {
-    if (_formSignUpKey.currentState?.validate() ?? false) {
-      bool success = await _authService.signUpWithEmailPassword(
-          username, email, password, context);
-      if (!success) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Sign-up failed!'),
-          backgroundColor: Colors.red,
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Sign-up successful!'),
-          backgroundColor: Colors.green,
-        ));
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +70,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                           icon: _isGoogleLoading
                               ? const CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 130, 77, 160), strokeWidth: 3)
+                                  color: Color.fromARGB(255, 130, 77, 160),
+                                  strokeWidth: 3)
                               : Image.asset('assets/images/google_logo.png',
                                   height: 18),
                           label: Text(

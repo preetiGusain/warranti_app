@@ -140,7 +140,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                       options: CarouselOptions(
                         height: 400,
                         enlargeCenterPage: true,
-                        viewportFraction: 0.7,
+                        viewportFraction: 0.8,
                         enlargeStrategy: CenterPageEnlargeStrategy.height,
                         onPageChanged: (index, reason) {
                           setState(() {
@@ -159,11 +159,11 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 7),
                   // Page indicator
                   buildIndicator(activeIndex),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 7),
 
                   // Warranty details below carousel
                   Expanded(

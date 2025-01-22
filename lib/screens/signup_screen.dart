@@ -21,7 +21,6 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isGoogleLoading = false;
   bool _isSignupLoading = false;
 
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -37,6 +36,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40.0),
                   topRight: Radius.circular(40.0),
+                  bottomLeft: Radius.circular(40.0),
+                  bottomRight: Radius.circular(40.0),
                 ),
               ),
               child: SingleChildScrollView(
@@ -105,7 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 40.0),
+                      const SizedBox(height: 20.0),
 
                       Text(
                         'Or sign up with Email and Password',
@@ -115,7 +116,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           color: lightColorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 25.0),
+                      const SizedBox(height: 15.0),
 
                       // Full name
                       TextFormField(
@@ -242,11 +243,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                   }
                                 },
                           child: _isSignupLoading
-                              ? const CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 130, 77, 160))
+                              ? Padding(
+                                  padding: const EdgeInsets.all(
+                                      8.0),
+                                  child: const CircularProgressIndicator(
+                                    color: Color.fromARGB(255, 130, 77, 160),
+                                  ),
+                                )
                               : const Text("Sign up"),
                         ),
                       ),
+
                       const SizedBox(height: 25.0),
 
                       // Divider with "or" style

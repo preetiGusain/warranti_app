@@ -79,6 +79,8 @@ class _SigninScreenState extends State<SigninScreen> {
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40.0),
                   topRight: Radius.circular(40.0),
+                  bottomLeft: Radius.circular(40.0),
+                  bottomRight: Radius.circular(40.0),
                 ),
               ),
               child: SingleChildScrollView(
@@ -114,7 +116,8 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                           icon: _isGoogleLoading
                               ? const CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 130, 77, 160), strokeWidth: 3)
+                                  color: Color.fromARGB(255, 130, 77, 160),
+                                  strokeWidth: 3)
                               : Image.asset('assets/images/google_logo.png',
                                   height: 18),
                           label: Text(
@@ -233,6 +236,7 @@ class _SigninScreenState extends State<SigninScreen> {
                       const SizedBox(
                         height: 40.0,
                       ),
+
                       //Sign-in button
                       SizedBox(
                         width: double.infinity,
@@ -243,8 +247,11 @@ class _SigninScreenState extends State<SigninScreen> {
                                   _signIn();
                                 },
                           child: _isSigninLoading
-                              ? const CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 130, 77, 160))
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: const CircularProgressIndicator(
+                                      color: Color.fromARGB(255, 130, 77, 160)),
+                                )
                               : const Text("Sign In"),
                         ),
                       ),

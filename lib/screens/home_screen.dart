@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> warranties = [];
   bool isUserLoading = true;
   bool isWarrantiesLoading = true;
+  bool isLogoutLoading = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -77,19 +78,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void logoutUser() async {
+    setState(() {
+      isLogoutLoading = true;
+    });
+
     try {
       await TokenService.deleteToken();
       await userService.deleteUserData();
       await GoogleSigninApi.logout();
+      await Future.delayed(const Duration(seconds: 1));
+
       setState(() {
-        user = {};
+        isLogoutLoading = false;
       });
-      Navigator.of(context).pushNamed('/signin').then((_) {
-        // Reload user data after returning from sign-in
-        setUserData();
-      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logged out successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.of(context).pushNamed('/signin');
     } catch (e) {
+      setState(() {
+        isLogoutLoading = false;
+      });
       print('Error logging out: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Logout failed!'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -199,23 +220,37 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color.fromARGB(255, 119, 63, 176),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                ),
-                onPressed: () {
-                  logoutUser();
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.logout, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Logout', style: TextStyle(color: Colors.white)),
-                  ],
+              child: SizedBox(
+                height: 60,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color.fromARGB(255, 119, 63, 176),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 18, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: isLogoutLoading
+                      ? null
+                      : () {
+                          logoutUser();
+                        },
+                  child: isLogoutLoading
+                      ? const CircularProgressIndicator(
+                          strokeWidth: 3,
+                          color: Colors.white,
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.logout, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text('Logout',
+                                style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
                 ),
               ),
             ),

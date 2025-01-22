@@ -156,15 +156,39 @@ class _CreateScreenState extends State<CreateScreen> {
   }
 
   void goToNext() {
-    setState(() {
-      step += 1;
-    });
+    if (step == 1) {
+      if (productName.isEmpty || productPhoto == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all fields in step 1')),
+        );
+      } else {
+        setState(() {
+          step += 1;
+        });
+      }
+    } else if (step == 2) {
+      if (selectedDate == null || receiptPhoto == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all fields in step 2')),
+        );
+      } else {
+        setState(() {
+          step += 1;
+        });
+      }
+    } else if (step == 3) {
+      setState(() {
+        step += 1;
+      });
+    }
   }
 
   void goToPrevious() {
-    setState(() {
-      step -= 1;
-    });
+    if (step > 1) {
+      setState(() {
+        step -= 1;
+      });
+    }
   }
 
   @override
@@ -211,11 +235,28 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 20),
                 productPhoto != null
-                    ? Image.file(
-                        productPhoto!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+                    ? Stack(
+                        children: [
+                          Image.file(
+                            productPhoto!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove_circle,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  productPhoto = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       )
                     : const Text("No Product Image Selected"),
                 MaterialButton(
@@ -255,11 +296,28 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 20),
                 receiptPhoto != null
-                    ? Image.file(
-                        receiptPhoto!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+                    ? Stack(
+                        children: [
+                          Image.file(
+                            receiptPhoto!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove_circle,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  receiptPhoto = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       )
                     : const Text("No Receipt Image Selected"),
                 MaterialButton(
@@ -313,11 +371,28 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 20),
                 warrantyCardPhoto != null
-                    ? Image.file(
-                        warrantyCardPhoto!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+                    ? Stack(
+                        children: [
+                          Image.file(
+                            warrantyCardPhoto!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: IconButton(
+                              icon: const Icon(Icons.remove_circle,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  warrantyCardPhoto = null;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       )
                     : const Text("No Warranty Card Image Selected"),
                 MaterialButton(

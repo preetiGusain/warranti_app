@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/signup_screen.dart';
-import 'package:warranti_app/theme/theme.dart';
 import 'package:warranti_app/widgets/custom_scaffold.dart';
 import 'package:warranti_app/widgets/welcome_button.dart';
 
@@ -14,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
       child: Column(
         children: [
           Flexible(
-            flex: 8,
+            flex: 6,
             child: Container(
               padding: const EdgeInsets.symmetric(
                 vertical: 0,
@@ -46,8 +45,9 @@ class WelcomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          Spacer(),
           Flexible(
-            flex: 1,
+            flex: 2,
             child: Align(
               alignment: Alignment.bottomRight,
               child: Row(

@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/welcome_screen.dart';
 import 'package:warranti_app/service/auth_service.dart';
+import 'package:warranti_app/widgets/connection_checker.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +18,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
     _checkUserAuthentication();
   }
 
@@ -31,7 +30,11 @@ class _SplashScreenState extends State<SplashScreen> {
         if (isSignedIn) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(
+              builder: (context) => ConnectionChecker(
+                child: const HomeScreen(),
+              ),
+            ),
           );
         } else {
           Navigator.pushReplacement(

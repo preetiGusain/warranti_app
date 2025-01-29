@@ -6,6 +6,7 @@ import 'package:warranti_app/service/token_service.dart';
 import 'package:warranti_app/service/user_service.dart';
 import 'package:warranti_app/service/warranties_service.dart';
 import 'package:intl/intl.dart';
+import 'package:warranti_app/widgets/connection_checker.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,6 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void refreshWarranties() {
+    setWarranties();
+  }
+
   void logoutUser() async {
     setState(() {
       isLogoutLoading = true;
@@ -126,7 +131,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (isUserLoading || isWarrantiesLoading) {
-      return Scaffold(
+      return ConnectionChecker(
+        onConnectionRestored: refreshWarranties,
+        child: Scaffold(
           appBar: AppBar(
             title: const Text('Warranties'),
             centerTitle: true,
@@ -140,7 +147,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text('Loading your warranties...'),
               ],
             ),
-          ));
+          ),
+        ),
+      );
     }
 
     return Scaffold(

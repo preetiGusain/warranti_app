@@ -22,28 +22,36 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkUserAuthentication() async {
-    bool isSignedIn = await _authService.isUserSignedIn();
+    try {
+      debugPrint('Checking if the user is signed in...');
+      bool isSignedIn = await _authService.isUserSignedIn();
+      debugPrint('User is signed in: $isSignedIn');
 
-    Timer(
-      const Duration(seconds: 3),
-      () {
-        if (isSignedIn) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ConnectionChecker(
-                child: const HomeScreen(),
-              ),
-            ),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-          );
-        }
-      },
-    );
+      await Future.delayed(const Duration(seconds: 3));
+
+     
+          // Ensure the widget is still mounted before using context
+          if (mounted) {
+            debugPrint('Navigating to the next screen...');
+            if (isSignedIn) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConnectionChecker(
+                    child: const HomeScreen(),
+                  ),
+                ),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+              );
+            }
+          }
+    } catch (e) {
+      debugPrint('Error during user authentication: $e');
+    }
   }
 
   @override

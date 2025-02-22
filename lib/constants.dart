@@ -1,2 +1,2 @@
-const String backend_uri = "https://warranti-backend.onrender.com";
-//const String backend_uri = "http://10.0.2.2:3000";
+const String backendUri = "https://warranti-backend.onrender.com";
+//const String backendUri = "http://10.0.2.2:3000";

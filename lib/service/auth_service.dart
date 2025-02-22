@@ -10,38 +10,47 @@ class AuthService {
   // Checks if the user is signed in by verifying the stored token
   Future<bool> isUserSignedIn() async {
     String? token = await TokenService.getToken();
-    if (token == null) return false;
-    if (token.isEmpty) return false;
+    debugPrint('Token from TokenService: $token');
+
+    // If there's no token or the token is empty, the user is not signed in
+    if (token == null || token.isEmpty) return false;
 
     try {
       final response = await http.get(
-        Uri.parse('$backend_uri/auth/check'),
+        Uri.parse('$backendUri/auth/check'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': token,
         },
       );
-      print("Response: $response");
+      
+      debugPrint("Response headers: ${response.headers}");
+      debugPrint("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
-        print("User is logged in!  Status code : ${response.statusCode}");
+        debugPrint("User is logged in!  Status code : ${response.statusCode}");
         return true;
       } else if (response.statusCode == 401) {
-        print(
-            "We should call with refresh token to check validity. : ${response.statusCode}");
+        // Handle unauthorized error
+        debugPrint("Refresh token required. Status code : ${response.statusCode}");
         try {
           await _refreshTokenFromBackend();
           return true;
         } catch (e) {
-          print(e);
+          debugPrint(e as String?);
           return false;
         }
+      } else if (response.statusCode == 503) {
+        // Handle server being unavailable
+        debugPrint("Backend service unavailable. Status code: ${response.statusCode}");
+        return false;
       } else {
-        print("User token is not valid! Status code : ${response.statusCode}");
+        // Handle other status codes
+        debugPrint("User token is not valid! Status code : ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      print('Error during request: $e');
+      debugPrint('Error during request: $e');
       return false;
     }
   }
@@ -63,7 +72,7 @@ class AuthService {
   Future<bool> _fetchTokenFromBackend(user) async {
     try {
       final response = await http.post(
-        Uri.parse('$backend_uri/oauth/google/app'),
+        Uri.parse('$backendUri/oauth/google/app'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -74,33 +83,33 @@ class AuthService {
           "photoUrl": user.photoUrl ?? ''
         }),
       );
-      print("Response: $response");
+      debugPrint("Response: ${response.body}");
 
       if (response.statusCode == 200) {
         final body = response.body;
-        print("Response body: $body");
+        debugPrint("Response body: $body");
 
         final json = jsonDecode(body);
-        print("Decoded JSON: $json");
+        debugPrint("Decoded JSON: $json");
 
         if (json.containsKey('refreshToken') && json['refreshToken'] != null) {
           await TokenService.storeRefreshToken(json['refreshToken']);
         } else {
-          print('Refresh Token not found in response body');
+          debugPrint('Refresh Token not found in response body');
         }
 
         if (json.containsKey('token') && json['token'] != null) {
           await TokenService.storeToken(json['token']);
           return true;
         } else {
-          print('Token not found in response body');
+          debugPrint('Token not found in response body');
         }
       } else {
-        print('Failed to fetch token, Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to fetch token, Status code: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
       }
     } catch (e) {
-      print('Error during request: $e');
+      debugPrint('Error during request: $e');
     }
     return false;
   }
@@ -112,7 +121,7 @@ class AuthService {
     if (_id == null) throw Exception("Couldn't find id");
     if (refreshToken == null) throw Exception("Don't have refresh token");
     final response = await http.post(
-      Uri.parse('$backend_uri/auth/refresh'),
+      Uri.parse('$backendUri/auth/refresh'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -121,21 +130,21 @@ class AuthService {
     );
     if (response.statusCode == 200) {
       final body = response.body;
-      print("Response body: $body");
+      debugPrint("Response body: $body");
 
       final json = jsonDecode(body);
-      print("Decoded JSON: $json");
+      debugPrint("Decoded JSON: $json");
 
       if (json.containsKey('refreshToken') && json['refreshToken'] != null) {
         await TokenService.storeRefreshToken(json['refreshToken']);
       } else {
-        print('Refresh Token not found in response body');
+        debugPrint('Refresh Token not found in response body');
       }
 
       if (json.containsKey('token') && json['token'] != null) {
         await TokenService.storeToken(json['token']);
       } else {
-        print('Token not found in response body');
+        debugPrint('Token not found in response body');
       }
     } else if (response.statusCode == 401) {
       throw Exception("We have to login again!");
@@ -147,7 +156,7 @@ class AuthService {
       String email, String password, BuildContext context) async {
     try {
       final response = await http.post(
-        Uri.parse('$backend_uri/auth/login'),
+        Uri.parse('$backendUri/auth/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -166,14 +175,14 @@ class AuthService {
           Navigator.of(context).pushNamed('/home');
           return true;
         } else {
-          print('Token not found in response body');
+          debugPrint('Token not found in response body');
         }
       } else {
-        print('Failed to sign up, Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to sign up, Status code: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
       }
     } catch (e) {
-      print('Error during signup: $e');
+      debugPrint('Error during signup: $e');
     }
     return false;
   }
@@ -190,7 +199,7 @@ class AuthService {
     }
     try {
       final response = await http.post(
-        Uri.parse('$backend_uri/auth/signup'),
+        Uri.parse('$backendUri/auth/signup'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -214,14 +223,14 @@ class AuthService {
             content: Text('Signup failed'),
             backgroundColor: Colors.red,
           ));
-          print('Token not found in response body');
+          debugPrint('Token not found in response body');
         }
       } else {
-        print('Failed to sign up, Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        debugPrint('Failed to sign up, Status code: ${response.statusCode}');
+        debugPrint('Response body: ${response.body}');
       }
     } catch (e) {
-      print('Error during signup: $e');
+      debugPrint('Error during signup: $e');
     }
     return false;
   }

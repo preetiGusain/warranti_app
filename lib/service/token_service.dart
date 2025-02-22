@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenService {
   // Create an instance of FlutterSecureStorage
-  static final FlutterSecureStorage _storage = FlutterSecureStorage();
+  static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
   // Stores the token
   static Future<void> storeToken(String token) async {

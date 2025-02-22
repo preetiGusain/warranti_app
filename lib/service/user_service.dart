@@ -6,7 +6,7 @@ import 'package:warranti_app/service/token_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserService {
-  final storage = const FlutterSecureStorage();
+  final storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
   Future<String?> getUserId() async {
     Map<String, dynamic>? storedUser = await getStoredUser();

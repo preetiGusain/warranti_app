@@ -1,0 +1,2 @@
+/Users/preetigusain/Projects/warranti_app/android/app/.cxx/Debug/1bj1o2ph/x86/CMakeFiles/edit_cache.dir
+/Users/preetigusain/Projects/warranti_app/android/app/.cxx/Debug/1bj1o2ph/x86/CMakeFiles/rebuild_cache.dir

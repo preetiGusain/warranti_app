@@ -7,6 +7,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class UserService {
   final storage = const FlutterSecureStorage();
 
+  Future<String?> getUserId() async {
+    Map<String, dynamic>? storedUser = await getStoredUser();
+    if (storedUser == null) return null;
+    if (storedUser.isEmpty) return null;
+    if (storedUser['_id'] == null) return null;
+    return storedUser['_id'];
+  }
+
   Future<Map<String, dynamic>?> getStoredUser() async {
     try {
       final userJson = await storage.read(key: 'user');

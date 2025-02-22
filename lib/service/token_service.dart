@@ -4,20 +4,37 @@ class TokenService {
   // Create an instance of FlutterSecureStorage
   static final FlutterSecureStorage _storage = FlutterSecureStorage();
 
-  // Store the token
+  // Stores the token
   static Future<void> storeToken(String token) async {
     await _storage.write(key: 'jwt_token', value: token);
     print('Token stored successfully');
   }
 
-  // Retrieve the token
+  // Retrievesthe token
   static Future<String?> getToken() async {
     return await _storage.read(key: 'jwt_token');
   }
 
-  // Delete the token
+  // Deletes the token
   static Future<void> deleteToken() async {
     print('Deleting token');
     return await _storage.delete(key: 'jwt_token');
+  }
+
+  // Stores the refresh token
+  static Future<void> storeRefreshToken(String token) async {
+    await _storage.write(key: 'refresh_token', value: token);
+    print('Token stored successfully');
+  }
+
+  // Retrieves the refresh token
+  static Future<String?> getRefreshToken() async {
+    return await _storage.read(key: 'refresh_token');
+  }
+
+  // Deletes the refresh token
+  static Future<void> deleteRefreshToken() async {
+    print('Deleting token');
+    return await _storage.delete(key: 'refresh_token');
   }
 }

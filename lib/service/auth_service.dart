@@ -4,12 +4,46 @@ import 'package:flutter/material.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
+import 'package:warranti_app/service/user_service.dart';
 
 class AuthService {
   // Checks if the user is signed in by verifying the stored token
   Future<bool> isUserSignedIn() async {
     String? token = await TokenService.getToken();
-    return token != null && token.isNotEmpty;
+    if (token == null) return false;
+    if (token.isEmpty) return false;
+
+    try {
+      final response = await http.get(
+        Uri.parse('$backend_uri/auth/check'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': token,
+        },
+      );
+      print("Response: $response");
+
+      if (response.statusCode == 200) {
+        print("User is logged in!  Status code : ${response.statusCode}");
+        return true;
+      } else if (response.statusCode == 401) {
+        print(
+            "We should call with refresh token to check validity. : ${response.statusCode}");
+        try {
+          await _refreshTokenFromBackend();
+          return true;
+        } catch (e) {
+          print(e);
+          return false;
+        }
+      } else {
+        print("User token is not valid! Status code : ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print('Error during request: $e');
+      return false;
+    }
   }
 
   // Sign up with Google
@@ -49,6 +83,12 @@ class AuthService {
         final json = jsonDecode(body);
         print("Decoded JSON: $json");
 
+        if (json.containsKey('refreshToken') && json['refreshToken'] != null) {
+          await TokenService.storeRefreshToken(json['refreshToken']);
+        } else {
+          print('Refresh Token not found in response body');
+        }
+
         if (json.containsKey('token') && json['token'] != null) {
           await TokenService.storeToken(json['token']);
           return true;
@@ -63,6 +103,43 @@ class AuthService {
       print('Error during request: $e');
     }
     return false;
+  }
+
+  // Fetch token from the backend after Google login
+  Future<void> _refreshTokenFromBackend() async {
+    String? _id = await UserService().getUserId();
+    String? refreshToken = await TokenService.getRefreshToken();
+    if (_id == null) throw Exception("Couldn't find id");
+    if (refreshToken == null) throw Exception("Don't have refresh token");
+    final response = await http.post(
+      Uri.parse('$backend_uri/auth/refresh'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body:
+          jsonEncode(<String, String>{"id": _id, "refreshToken": refreshToken}),
+    );
+    if (response.statusCode == 200) {
+      final body = response.body;
+      print("Response body: $body");
+
+      final json = jsonDecode(body);
+      print("Decoded JSON: $json");
+
+      if (json.containsKey('refreshToken') && json['refreshToken'] != null) {
+        await TokenService.storeRefreshToken(json['refreshToken']);
+      } else {
+        print('Refresh Token not found in response body');
+      }
+
+      if (json.containsKey('token') && json['token'] != null) {
+        await TokenService.storeToken(json['token']);
+      } else {
+        print('Token not found in response body');
+      }
+    } else if (response.statusCode == 401) {
+      throw Exception("We have to login again!");
+    }
   }
 
   // Sign up with Email/Password

@@ -1,4 +1,4 @@
-package com.example.warranti_app
+package com.preeti.warranti_app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -25,7 +25,7 @@ class WarrantiesService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint("Response body: ${response.body}");
+        //debugPrint("Response body: ${response.body}");
         try {
           final decodedResponse = jsonDecode(response.body);
           if (decodedResponse is Map<String, dynamic> &&
@@ -68,7 +68,7 @@ class WarrantiesService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint("Response body: ${response.body}");
+        //debugPrint("Response body: ${response.body}");
         try {
           final decodedResponse = jsonDecode(response.body);
           if (decodedResponse is Map<String, dynamic> &&

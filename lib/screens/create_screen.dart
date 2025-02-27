@@ -133,16 +133,31 @@ class _CreateScreenState extends State<CreateScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: const Text('Discard Changes'),
           content: const Text('Are you sure you want to discard your changes?'),
+          actionsAlignment: MainAxisAlignment.center,
           actions: <Widget>[
-            TextButton(
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF7E57C2)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                minimumSize: const Size(100, 48),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('No'),
+              child: const Text('No', style: TextStyle(color: Colors.black)),
             ),
-            TextButton(
+            const SizedBox(width: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: const Color(0xFF7E57C2),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                minimumSize: const Size(100, 48),
+              ),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -418,7 +433,7 @@ class _CreateScreenState extends State<CreateScreen> {
                   // Back button for steps 2 and 3
                   if (step > 1)
                     ElevatedButton(
-                      onPressed: goToPrevious,
+                      onPressed: savingWarranty ? null : goToPrevious,
                       child: const Text('Back'),
                     ),
 
@@ -436,7 +451,15 @@ class _CreateScreenState extends State<CreateScreen> {
                     ElevatedButton(
                       onPressed: savingWarranty ? null : handleSubmit,
                       child: savingWarranty
-                          ? const CircularProgressIndicator()
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
                           : const Text('Save'),
                     ),
                 ],

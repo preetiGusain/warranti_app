@@ -14,7 +14,6 @@ class WarrantyScreen extends StatefulWidget {
 
 class _WarrantyScreenState extends State<WarrantyScreen> {
   dynamic warranty;
-  bool _isDeleting = false;
   int activeIndex = 0;
 
   @override
@@ -48,13 +47,12 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
   Future<void> deleteWarranty() async {
     try {
       setState(() {
-        _isDeleting = true;
+        warranty = null;
       });
 
       await WarrantiesService.deleteWarranty(widget.id);
 
       setState(() {
-        _isDeleting = false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +63,6 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       setState(() {
-        _isDeleting = false;
       });
       print('Error deleting warranty');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,34 +76,70 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to delete?'),
-          content: const Text('This action cannot be undone.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              onPressed: _isDeleting
-                  ? null
-                  : () {
-                      Navigator.of(context).pop(true);
-                    },
-              child: _isDeleting
-                  ? const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 130, 77, 160), strokeWidth: 2)
-                  : const Text('Delete'),
-            ),
-          ],
+        bool isDeleting = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              title: const Text('Are you sure you want to delete?'),
+              content: const Text('This action cannot be undone.'),
+              actionsAlignment: MainAxisAlignment.center,
+              actions: <Widget>[
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF7E57C2)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(100, 48),
+                    foregroundColor: isDeleting ? Colors.grey : Colors.black,
+                  ),
+                  onPressed: isDeleting
+                      ? null
+                      : () => Navigator.of(context).pop(false),
+                  child:
+                      const Text('No'),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor:
+                        isDeleting ? Colors.grey : const Color(0xFF7E57C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(100, 48),
+                  ),
+                  onPressed: isDeleting
+                      ? null
+                      : () async {
+                          setState(() => isDeleting = true);
+                          await Future.delayed(const Duration(seconds: 2));
+
+                          if (context.mounted) {
+                            Navigator.of(context).pop(true);
+                          }
+                        },
+                  child: isDeleting
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text('Delete'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
 
+    // Call deleteWarranty() if user confirms
     if (confirmed == true) {
-      deleteWarranty();
+      await deleteWarranty();
     }
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/constants.dart';
@@ -143,278 +144,379 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<bool?> _showExitDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.all(20),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.power_settings_new,
+                size: 40,
+                color: Color.fromARGB(255, 133, 91, 176),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Are you sure you want to quit?",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: const Color(0xFF7E57C2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(100, 48),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child:
+                      const Text("No", style: TextStyle(color: Colors.white)),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF7E57C2)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    minimumSize: const Size(100, 48),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text("Yes"),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (isUserLoading || isWarrantiesLoading) {
-      return ConnectionChecker(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        bool? shouldExit = await _showExitDialog(context);
+        if (shouldExit == true) {
+          SystemNavigator.pop();
+        }
+      },
+      child: ConnectionChecker(
         onConnectionRestored: refreshWarranties,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Warranties'),
-            centerTitle: true,
-          ),
-          body: const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 20),
-                Text('Loading your warranties...'),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      key: _scaffoldKey,
-      //appbar
-      appBar: AppBar(
-        title: const Text('Warranties'),
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Stack(clipBehavior: Clip.none, children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundImage:
-                    user.isNotEmpty && user['profilePicture'] != null
-                        ? NetworkImage(user['profilePicture'])
-                        : null,
-                child: user.isEmpty || user['profilePicture'] == null
-                    ? const Icon(Icons.person)
-                    : null,
-              ),
-              if (isUserLoading)
-                const Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      height: 16,
-                      width: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Color.fromARGB(255, 130, 77, 160),
-                      ),
-                    ),
+        child: isUserLoading || isWarrantiesLoading
+            ? Scaffold(
+                appBar: AppBar(
+                  title: const Text('Warranties'),
+                  centerTitle: true,
+                ),
+                body: const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 20),
+                      Text('Loading your warranties...'),
+                    ],
                   ),
                 ),
-            ]),
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
-          ),
-        ],
-      ),
-      // Right Drawer
-      endDrawer: Drawer(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                UserAccountsDrawerHeader(
-                  accountName: Text(user['username'] ?? 'Guest'),
-                  accountEmail: Text(user['email'] ?? 'Not logged in'),
-                  currentAccountPicture: CircleAvatar(
-                    backgroundImage:
-                        user.isNotEmpty && user['profilePicture'] != null
-                            ? NetworkImage(user['profilePicture'])
-                            : null,
-                    child: user.isEmpty || user['profilePicture'] == null
-                        ? const Icon(Icons.person)
-                        : null,
-                  ),
-                ),
-                Positioned(
-                  top: 20,
-                  right: 10,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      _scaffoldKey.currentState?.closeEndDrawer();
-                    },
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            Expanded(child: Container()),
-            Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                child: Column(
-                  children: [
-                    //Privacy policy button
-                    SizedBox(
-                      height: 60,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: Colors.blueGrey,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 18, horizontal: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+              )
+            : Scaffold(
+                key: _scaffoldKey,
+                //appbar
+                appBar: AppBar(
+                  title: const Text('Warranties'),
+                  automaticallyImplyLeading: false,
+                  centerTitle: true,
+                  actions: [
+                    IconButton(
+                      icon: Stack(clipBehavior: Clip.none, children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundImage:
+                              user.isNotEmpty && user['profilePicture'] != null
+                                  ? NetworkImage(user['profilePicture'])
+                                  : null,
+                          child: user.isEmpty || user['profilePicture'] == null
+                              ? const Icon(Icons.person)
+                              : null,
                         ),
-                        onPressed: _openPrivacyPolicy,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        if (isUserLoading)
+                          const Positioned.fill(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color.fromARGB(255, 130, 77, 160),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ]),
+                      onPressed: () {
+                        _scaffoldKey.currentState?.openEndDrawer();
+                      },
+                    ),
+                  ],
+                ),
+                // Right Drawer
+                endDrawer: Drawer(
+                  width: MediaQuery.of(context).size.width * 0.85,
+                  child: AbsorbPointer(
+                    absorbing: isLogoutLoading,
+                    child: Column(
+                      children: [
+                        Stack(
                           children: [
-                            Icon(Icons.description, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text('Privacy Policy',
-                                style: TextStyle(color: Colors.white)),
+                            UserAccountsDrawerHeader(
+                              accountName: Text(user['username'] ?? 'Guest'),
+                              accountEmail:
+                                  Text(user['email'] ?? 'Not logged in'),
+                              currentAccountPicture: CircleAvatar(
+                                backgroundImage: user.isNotEmpty &&
+                                        user['profilePicture'] != null
+                                    ? NetworkImage(user['profilePicture'])
+                                    : null,
+                                child:
+                                    user.isEmpty || user['profilePicture'] == null
+                                        ? const Icon(Icons.person)
+                                        : null,
+                              ),
+                            ),
+                            Positioned(
+                              top: 20,
+                              right: 10,
+                              child: IconButton(
+                                icon: const Icon(Icons.arrow_back),
+                                onPressed: () {
+                                  _scaffoldKey.currentState?.closeEndDrawer();
+                                },
+                                color: Colors.white,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    //Logout button
-                    SizedBox(
-                      height: 60,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor:
-                              const Color.fromARGB(255, 119, 63, 176),
+                        Expanded(child: Container()),
+                        Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.symmetric(
-                              vertical: 18, horizontal: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                              vertical: 10, horizontal: 30),
+                          child: Column(
+                            children: [
+                              //Privacy policy button
+                              SizedBox(
+                                height: 60,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.blueGrey,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18, horizontal: 20),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  onPressed: _openPrivacyPolicy,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.description,
+                                          color: Colors.white),
+                                      SizedBox(width: 8),
+                                      Text('Privacy Policy',
+                                          style: TextStyle(color: Colors.white)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                    
+                              const SizedBox(height: 10),
+                    
+                              //Logout button
+                              SizedBox(
+                                height: 60,
+                                width: double.infinity, 
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 133, 91, 176),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18, horizontal: 20),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  onPressed: isLogoutLoading? null : () {logoutUser();},   
+                                  child: isLogoutLoading
+                                      ? const SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 3,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.logout,
+                                                color: Colors.white),
+                                            SizedBox(width: 8),
+                                            Text('Logout',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        onPressed: isLogoutLoading
-                            ? null
-                            : () {
-                                logoutUser();
-                              },
-                        child: isLogoutLoading
-                            ? const CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: Colors.white,
-                              )
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.logout, color: Colors.white),
-                                  SizedBox(width: 8),
-                                  Text('Logout',
-                                      style: TextStyle(color: Colors.white)),
-                                ],
+                      ],
+                    ),
+                  ),
+                ),
+
+                //body
+                body: Column(
+                  children: [
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          await setWarranties();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Page refreshed!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        },
+                        child: warranties.isEmpty
+                            ? const Center(
+                                child: Text('No warranties available'))
+                            : ListView.builder(
+                                itemCount: warranties.length,
+                                itemBuilder: (context, index) {
+                                  final warranty = warranties[index];
+
+                                  final productName = warranty['productName'] ??
+                                      'No Product Name';
+                                  final purchaseDate =
+                                      warranty['purchaseDate'] ??
+                                          'No Purchase Date';
+                                  final warrantyDuration =
+                                      warranty['warrantyDuration'] ??
+                                          'No Duration';
+                                  final warrantyDurationUnit =
+                                      warranty['warrantyDurationUnit'] ??
+                                          'No Duration Unit';
+                                  final productPhoto =
+                                      warranty['productPhoto'] ??
+                                          'No Product Photo';
+                                  final status =
+                                      warranty['status'] ?? 'No Status';
+
+                                  Color statusColor = (status == 'Expired')
+                                      ? Colors.red
+                                      : Colors.green;
+
+                                  return Card(
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    margin: const EdgeInsets.all(10),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, '/warranty',
+                                            arguments: warranty['_id']);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.network(
+                                                productPhoto,
+                                                width: 60,
+                                                height: 60,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    productName,
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'Purchased on: ${formatDate(purchaseDate)}',
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  Text(
+                                                    'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
+                                                    style: const TextStyle(
+                                                        fontSize: 14),
+                                                  ),
+                                                  Text(
+                                                    '$status',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: statusColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                       ),
                     ),
                   ],
-                )),
-          ],
-        ),
-      ),
-
-      //body
-      body: Column(
-        children: [
-          Expanded(
-            child: warranties.isEmpty
-                ? const Center(child: Text('No warranties available'))
-                : ListView.builder(
-                    itemCount: warranties.length,
-                    itemBuilder: (context, index) {
-                      final warranty = warranties[index];
-
-                      final productName =
-                          warranty['productName'] ?? 'No Product Name';
-                      final purchaseDate =
-                          warranty['purchaseDate'] ?? 'No Purchase Date';
-                      final warrantyDuration =
-                          warranty['warrantyDuration'] ?? 'No Duration';
-                      final warrantyDurationUnit =
-                          warranty['warrantyDurationUnit'] ??
-                              'No Duration Unit';
-                      final productPhoto =
-                          warranty['productPhoto'] ?? 'No Product Photo';
-                      final status = warranty['status'] ?? 'No Status';
-
-                      Color statusColor =
-                          (status == 'Expired') ? Colors.red : Colors.green;
-
-                      return Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        margin: const EdgeInsets.all(10),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/warranty',
-                                arguments: warranty['_id']);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    productPhoto,
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        productName,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Purchased on: ${formatDate(purchaseDate)}',
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      Text(
-                                        'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
-                                        style: const TextStyle(fontSize: 14),
-                                      ),
-                                      Text(
-                                        '$status',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: statusColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/create');
-        },
-        tooltip: 'Create Warranty',
-        child: const Icon(Icons.add),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/create');
+                  },
+                  tooltip: 'Create Warranty',
+                  child: const Icon(Icons.add),
+                ),
+              ),
       ),
     );
   }

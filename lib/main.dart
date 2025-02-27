@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Warranti',
       theme: ThemeData(
+        fontFamilyFallback: ['Roboto', 'Arial'],
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

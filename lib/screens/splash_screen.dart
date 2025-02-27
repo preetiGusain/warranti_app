@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bool isSignedIn = await _authService.isUserSignedIn();
       debugPrint('User is signed in: $isSignedIn');
 
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 2));
 
      
           // Ensure the widget is still mounted before using context

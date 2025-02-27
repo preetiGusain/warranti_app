@@ -66,5 +66,15 @@
     <!-- End of Privacy Usage Descriptions -->
 	<key>GIDClientID</key>
 	<string>82094283338-04khchejru74da36g9mgors49v68iku4.apps.googleusercontent.com</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>https</string>
+        <string>http</string>
+    </array>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

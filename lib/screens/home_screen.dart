@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
+import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:warranti_app/service/user_service.dart';
 import 'package:warranti_app/service/warranties_service.dart';
@@ -128,6 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _openPrivacyPolicy() async {
+    final Uri url = Uri.parse(privacyPolicyUrl);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      print("Could not launch $privacyPolicyUrl");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Could not open Privacy Policy")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isUserLoading || isWarrantiesLoading) {
@@ -227,42 +242,76 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(child: Container()),
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-              child: SizedBox(
-                height: 60,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: const Color.fromARGB(255, 119, 63, 176),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: isLogoutLoading
-                      ? null
-                      : () {
-                          logoutUser();
-                        },
-                  child: isLogoutLoading
-                      ? const CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Colors.white,
-                        )
-                      : const Row(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                child: Column(
+                  children: [
+                    //Privacy policy button
+                    SizedBox(
+                      height: 60,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blueGrey,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 18, horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: _openPrivacyPolicy,
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.logout, color: Colors.white),
+                            Icon(Icons.description, color: Colors.white),
                             SizedBox(width: 8),
-                            Text('Logout',
+                            Text('Privacy Policy',
                                 style: TextStyle(color: Colors.white)),
                           ],
                         ),
-                ),
-              ),
-            ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    //Logout button
+                    SizedBox(
+                      height: 60,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor:
+                              const Color.fromARGB(255, 119, 63, 176),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 18, horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: isLogoutLoading
+                            ? null
+                            : () {
+                                logoutUser();
+                              },
+                        child: isLogoutLoading
+                            ? const CircularProgressIndicator(
+                                strokeWidth: 3,
+                                color: Colors.white,
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.logout, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Text('Logout',
+                                      style: TextStyle(color: Colors.white)),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
+                )),
           ],
         ),
       ),

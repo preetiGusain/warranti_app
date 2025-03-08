@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:warranti_app/service/warranties_service.dart';
 
@@ -20,6 +21,8 @@ class _CreateScreenState extends State<CreateScreen> {
   File? receiptPhoto;
   int step = 1;
   bool savingWarranty = false;
+  bool isMonthSelected = true;
+  TextEditingController _warrantyDurationController = TextEditingController();
 
   Future<void> selectDate(BuildContext context) async {
     final DateTime initialDate = selectedDate ?? DateTime.now();
@@ -354,12 +357,26 @@ class _CreateScreenState extends State<CreateScreen> {
               // Step 3:
               if (step == 3) ...[
                 TextField(
+                  controller: _warrantyDurationController,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  decoration: InputDecoration(
                     labelText: 'Warranty Duration',
+                    hintText: isMonthSelected ? 'Enter in months' : 'Enter in years',
+                    suffixText: isMonthSelected ? 'months' : 'years',
                   ),
                   onChanged: (value) {
                     setState(() {
+                      if (value.length > 2) {
+                        _warrantyDurationController.text =
+                            value.substring(0, 2);
+                        _warrantyDurationController.selection =
+                            TextSelection.fromPosition(TextPosition(
+                                offset:
+                                    _warrantyDurationController.text.length));
+                      }
                       warrantyDuration = value;
                     });
                   },
@@ -370,19 +387,22 @@ class _CreateScreenState extends State<CreateScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                DropdownButton<String>(
-                  value: selectedUnit,
-                  items: <String>['Month', 'Year'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedUnit = value ?? 'Month';
-                    });
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      isMonthSelected ? 'Month' : 'Year',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    Switch(
+                      value: isMonthSelected,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isMonthSelected = value;
+                        });
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 warrantyCardPhoto != null

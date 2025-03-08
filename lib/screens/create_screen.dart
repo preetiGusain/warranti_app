@@ -27,7 +27,7 @@ class _CreateScreenState extends State<CreateScreen> {
   Future<void> selectDate(BuildContext context) async {
     final DateTime initialDate = selectedDate ?? DateTime.now();
     final DateTime firstDate = DateTime(1900);
-    final DateTime lastDate = DateTime(2100);
+    final DateTime lastDate = DateTime.now();
 
     final DateTime? picked = await showDatePicker(
       context: context,

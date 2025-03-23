@@ -13,7 +13,6 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formSignUpKey = GlobalKey<FormState>();
-  final AuthService _authService = AuthService();
 
   String username = '';
   String email = '';
@@ -86,7 +85,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             if (_isGoogleLoading) return;
                             setState(() => _isGoogleLoading = true);
                             bool success =
-                                await _authService.signInWithGoogle(context);
+                                await AuthService.signInWithGoogle(context);
                             setState(() => _isGoogleLoading = false);
                             if (!success) {
                               ScaffoldMessenger.of(context)
@@ -217,7 +216,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     setState(() {
                                       _isSignupLoading = true;
                                     });
-                                    final success = await _authService
+                                    final success = await AuthService
                                         .signUpWithEmailPassword(
                                       username,
                                       email,

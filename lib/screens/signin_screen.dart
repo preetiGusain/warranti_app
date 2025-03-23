@@ -13,7 +13,6 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formSignInKey = GlobalKey<FormState>();
-  final AuthService _authService = AuthService();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -31,7 +30,7 @@ class _SigninScreenState extends State<SigninScreen> {
       });
 
       bool success =
-          await _authService.loginWithEmailPassword(email, password, context);
+          await AuthService.loginWithEmailPassword(email, password, context);
       setState(() {
         _isSigninLoading = false;
       });
@@ -128,6 +127,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             ),
                           ),
                           onPressed: () async {
+                            debugPrint("Sign in with google pressed");
                             if (_isGoogleLoading) return;
 
                             setState(() {
@@ -135,7 +135,7 @@ class _SigninScreenState extends State<SigninScreen> {
                             });
 
                             bool success =
-                                await _authService.signInWithGoogle(context);
+                                await AuthService.signInWithGoogle(context);
 
                             setState(() {
                               _isGoogleLoading = false;

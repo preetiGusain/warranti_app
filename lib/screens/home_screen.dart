@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/constants.dart';
+import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:warranti_app/service/user_service.dart';
 import 'package:warranti_app/service/warranties_service.dart';
@@ -20,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> user = {};
-  final UserService userService = UserService();
   List<dynamic> warranties = [];
   bool isUserLoading = true;
   bool isWarrantiesLoading = true;
@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> setUserData() async {
     try {
-      Map<String, dynamic>? storedUser = await userService.getStoredUser();
+      Map<String, dynamic>? storedUser = await UserService.getStoredUser();
 
       if (storedUser != null) {
         print("User fetched from storage: $storedUser");
@@ -47,8 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       } else {
         print("No user data in storage, fetching from API...");
-        await userService.fetchUser();
-        storedUser = await userService.getStoredUser();
+        await UserService.fetchUser();
+        storedUser = await UserService.getStoredUser();
         if (storedUser != null) {
           print("User fetched after API call: $storedUser");
           setState(() {
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       await TokenService.deleteToken();
-      await userService.deleteUserData();
+      await UserService.deleteUserData();
       await GoogleSigninApi.logout();
       await Future.delayed(const Duration(seconds: 1));
 
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
-      Navigator.of(context).pushNamed('/signin');
+      NavigatorService.pushNamed('/signin');
     } catch (e) {
       setState(() {
         isLogoutLoading = false;
@@ -248,8 +248,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               user.isNotEmpty && user['profilePicture'] != null
                                   ? NetworkImage(user['profilePicture'])
                                   : null,
+                          backgroundColor: user['profilePicture'] == null
+                              ? Colors.blueGrey
+                              : Colors.transparent,
                           child: user.isEmpty || user['profilePicture'] == null
-                              ? const Icon(Icons.person)
+                              ? Text(
+                                  user.isNotEmpty && user['username'] != null
+                                      ? user['username'][0].toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                )
                               : null,
                         ),
                         if (isUserLoading)
@@ -291,10 +302,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                         user['profilePicture'] != null
                                     ? NetworkImage(user['profilePicture'])
                                     : null,
-                                child:
-                                    user.isEmpty || user['profilePicture'] == null
-                                        ? const Icon(Icons.person)
-                                        : null,
+                                backgroundColor: user['profilePicture'] == null
+                                    ? Colors.blueGrey
+                                    : Colors.transparent,
+                                child: user.isEmpty ||
+                                        user['profilePicture'] == null
+                                    ? Text(
+                                        user.isNotEmpty &&
+                                                user['username'] != null
+                                            ? user['username'][0].toUpperCase()
+                                            : '?',
+                                        style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      )
+                                    : null,
                               ),
                             ),
                             Positioned(
@@ -338,18 +361,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.white),
                                       SizedBox(width: 8),
                                       Text('Privacy Policy',
-                                          style: TextStyle(color: Colors.white)),
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ],
                                   ),
                                 ),
                               ),
-                    
+
                               const SizedBox(height: 10),
-                    
+
                               //Logout button
                               SizedBox(
                                 height: 60,
-                                width: double.infinity, 
+                                width: double.infinity,
                                 child: TextButton(
                                   style: TextButton.styleFrom(
                                     foregroundColor: Colors.white,
@@ -361,7 +385,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  onPressed: isLogoutLoading? null : () {logoutUser();},   
+                                  onPressed: isLogoutLoading
+                                      ? null
+                                      : () {
+                                          logoutUser();
+                                        },
                                   child: isLogoutLoading
                                       ? const SizedBox(
                                           height: 24,

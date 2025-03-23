@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/welcome_screen.dart';
 import 'package:warranti_app/service/auth_service.dart';
-import 'package:warranti_app/widgets/connection_checker.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,8 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final AuthService _authService = AuthService();
-
   @override
   void initState() {
     super.initState();
@@ -24,33 +20,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkUserAuthentication() async {
     try {
       debugPrint('Checking if the user is signed in...');
-      bool isSignedIn = await _authService.isUserSignedIn();
-      debugPrint('User is signed in: $isSignedIn');
-
+      await AuthService.checkUserSignedInOnSplash();
       await Future.delayed(const Duration(seconds: 2));
-
-     
-          // Ensure the widget is still mounted before using context
-          if (mounted) {
-            debugPrint('Navigating to the next screen...');
-            if (isSignedIn) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ConnectionChecker(
-                    child: const HomeScreen(),
-                  ),
-                ),
-              );
-            } else {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-              );
-            }
-          }
     } catch (e) {
       debugPrint('Error during user authentication: $e');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+      );
     }
   }
 

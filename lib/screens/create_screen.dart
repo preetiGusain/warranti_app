@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/warranties_service.dart';
 
 class CreateScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _CreateScreenState extends State<CreateScreen> {
   int step = 1;
   bool savingWarranty = false;
   bool isMonthSelected = true;
-  TextEditingController _warrantyDurationController = TextEditingController();
+  final TextEditingController _warrantyDurationController = TextEditingController();
 
   Future<void> selectDate(BuildContext context) async {
     final DateTime initialDate = selectedDate ?? DateTime.now();
@@ -47,7 +48,6 @@ class _CreateScreenState extends State<CreateScreen> {
     if (productName.isNotEmpty &&
         warrantyDuration.isNotEmpty &&
         selectedDate != null &&
-        productPhoto != null &&
         warrantyCardPhoto != null &&
         receiptPhoto != null) {
       setState(() {
@@ -68,7 +68,7 @@ class _CreateScreenState extends State<CreateScreen> {
       });
 
       if (success) {
-        Navigator.pushNamed(context, '/home');
+        NavigatorService.pushNamed('/home');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Warranty saved successfully!')),
         );
@@ -111,7 +111,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Camera'),
                 onTap: () async {
-                  Navigator.pop(context);
+                  NavigatorService.pop();
                   await pickImage(imageType, ImageSource.camera);
                 },
               ),
@@ -119,7 +119,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Gallery'),
                 onTap: () async {
-                  Navigator.pop(context);
+                  NavigatorService.pop();
                   await pickImage(imageType, ImageSource.gallery);
                 },
               ),
@@ -149,7 +149,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 minimumSize: const Size(100, 48),
               ),
               onPressed: () {
-                Navigator.pop(context);
+                NavigatorService.pop();
               },
               child: const Text('No', style: TextStyle(color: Colors.black)),
             ),
@@ -162,8 +162,8 @@ class _CreateScreenState extends State<CreateScreen> {
                 minimumSize: const Size(100, 48),
               ),
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
+                NavigatorService.pop();
+                NavigatorService.pop();
               },
               child: const Text('Yes'),
             ),
@@ -175,7 +175,7 @@ class _CreateScreenState extends State<CreateScreen> {
 
   void goToNext() {
     if (step == 1) {
-      if (productName.isEmpty || productPhoto == null) {
+      if (productName.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all fields in step 1')),
         );
@@ -265,8 +265,7 @@ class _CreateScreenState extends State<CreateScreen> {
                             top: 0,
                             right: 0,
                             child: IconButton(
-                              icon: const Icon(Icons.remove_circle,
-                                  color: Colors.white),
+                              icon: const Icon(Icons.remove_circle, color: Colors.white),
                               onPressed: () {
                                 setState(() {
                                   productPhoto = null;

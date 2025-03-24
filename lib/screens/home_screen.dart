@@ -448,21 +448,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final purchaseDate =
                                       warranty['purchaseDate'] ??
                                           'No Purchase Date';
-                                  final warrantyDuration =
-                                      warranty['warrantyDuration'] ??
-                                          'No Duration';
-                                  final warrantyDurationUnit =
-                                      warranty['warrantyDurationUnit'] ??
-                                          'No Duration Unit';
                                   final productPhoto =
                                       warranty['productPhoto'] ??
                                           'No Product Photo';
-                                  final status =
-                                      warranty['status'] ?? 'No Status';
+                                  final warrantyEndDate =
+                                      warranty['warrantyEndDate'] ??
+                                          'Invalid Date';
 
-                                  Color statusColor = (status == 'Expired')
-                                      ? Colors.red
-                                      : Colors.green;
+                                  DateTime endDate;
+                                  try {
+                                    endDate = DateTime.parse(warrantyEndDate);
+                                  } catch (e) {
+                                    endDate = DateTime.now();
+                                  }
+
+                                  DateTime now = DateTime.now();
+                                  // Check if the warranty is expired
+                                  bool isExpired = endDate.isBefore(now);
+
+                                  // Determine the text and color based on the expiry status
+                                  String statusText =
+                                      isExpired ? 'Expired on:' : 'Valid until:';
+                                  Color statusColor =
+                                      isExpired ? Colors.red : Colors.green;
 
                                   return Card(
                                     elevation: 5,
@@ -504,27 +512,37 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           FontWeight.bold,
                                                     ),
                                                   ),
+                                                  const SizedBox(height: 5),
                                                   Text(
-                                                    'Purchased on: ${formatDate(purchaseDate)}',
+                                                    'Purchased on ${formatDate(purchaseDate)}',
                                                     style: const TextStyle(
-                                                        fontSize: 14),
-                                                  ),
-                                                  Text(
-                                                    'Warranty Duration: $warrantyDuration $warrantyDurationUnit',
-                                                    style: const TextStyle(
-                                                        fontSize: 14),
-                                                  ),
-                                                  Text(
-                                                    '$status',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: statusColor,
-                                                    ),
+                                                        fontSize: 12),
                                                   ),
                                                 ],
                                               ),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  statusText,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: statusColor,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  formatDate(warrantyEndDate),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: statusColor,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),

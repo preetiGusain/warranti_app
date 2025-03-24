@@ -3,13 +3,12 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 Widget buildImage(String imageUrl) {
   return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 8),
+    margin: const EdgeInsets.symmetric(horizontal: 2),
     color: Colors.grey[300],
     child: imageUrl.isNotEmpty
         ? Image.network(
             imageUrl,
-            width: 300,
-            height: 300,
+            height: 360,
             fit: BoxFit.cover,
           )
         : const Center(child: Text('No Image Available')),

@@ -52,8 +52,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
 
       await WarrantiesService.deleteWarranty(widget.id);
 
-      setState(() {
-      });
+      setState(() {});
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Warranty deleted successfully!')),
@@ -62,8 +61,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
-      setState(() {
-      });
+      setState(() {});
       print('Error deleting warranty');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to delete warranty!')),
@@ -97,8 +95,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                   onPressed: isDeleting
                       ? null
                       : () => Navigator.of(context).pop(false),
-                  child:
-                      const Text('No'),
+                  child: const Text('No'),
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
@@ -168,18 +165,19 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                 children: [
                   // Carousel for displaying product, warranty, and receipt images
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 2.0),
                     child: CarouselSlider.builder(
                       options: CarouselOptions(
                         height: 400,
                         enlargeCenterPage: true,
-                        viewportFraction: 0.8,
+                        viewportFraction: 1,
                         enlargeStrategy: CenterPageEnlargeStrategy.height,
                         onPageChanged: (index, reason) {
                           setState(() {
                             activeIndex = index;
                           });
                         },
+                        enableInfiniteScroll: false,
                       ),
                       itemCount: warranty['productPhoto'] != null ? 3 : 0,
                       itemBuilder: (context, index, realIndex) {

@@ -1,5 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:warranti_app/constants.dart';
+import 'package:warranti_app/service/auth_service.dart';
+import 'package:warranti_app/service/navigator_service.dart';
+import 'package:warranti_app/service/user_service.dart';
 
 class TokenService {
   // Create an instance of FlutterSecureStorage
@@ -13,7 +20,22 @@ class TokenService {
 
   // Retrievesthe token
   static Future<String?> getToken() async {
-    return await _storage.read(key: 'jwt_token');
+    final token = await _storage.read(key: 'jwt_token');
+    if(token != null) return token;
+    // Token is null, hence checking for refresh token
+    final refreshToken = await getRefreshToken();
+    if(refreshToken == null) {
+      NavigatorService.pushNamed('/login');
+      return null;
+    }
+
+    try {
+      await refreshTokenFromBackend();
+      return await _storage.read(key: 'jwt_token');
+    } catch (e) {
+      NavigatorService.pushNamed('/login');
+      return null;
+    }
   }
 
   // Deletes the token
@@ -37,5 +59,46 @@ class TokenService {
   static Future<void> deleteRefreshToken() async {
     debugPrint('Deleting token');
     return await _storage.delete(key: 'refresh_token');
+  }
+
+  /// Fetches refresh token and access token from the backend.
+  static Future<void> refreshTokenFromBackend() async {
+    debugPrint('Refresh Token being called');
+    String? id = await UserService.getUserId();
+    String? refreshToken = await TokenService.getRefreshToken();
+    if (id == null) throw Exception("Couldn't find id");
+    if (refreshToken == null) throw Exception("Don't have refresh token");
+    final response = await http.post(
+      Uri.parse('$backendUri/auth/refresh'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body:
+          jsonEncode(<String, String>{"id": id, "refreshToken": refreshToken}),
+    );
+    await setBothTokensFromResponse(response);
+  }
+
+  /// Checks response body of Auth APIs and sets tokens correctly
+  static Future<void> setBothTokensFromResponse(http.Response response) async {
+    final statusCode = response.statusCode;
+    final body = response.body;
+    debugPrint("Response body: $body");
+    switch (statusCode) {
+      case 200:
+        final json = jsonDecode(body);
+        if (json.containsKey('refreshToken') &&
+            json['refreshToken'] != null &&
+            json.containsKey('token') &&
+            json['token'] != null) {
+          await TokenService.storeRefreshToken(json['refreshToken']);
+          await TokenService.storeToken(json['token']);
+          return;
+        } else {
+          throw Exception('Token not found in response body');
+        }
+      default:
+        throw Exception('Status code: $statusCode');
+    }
   }
 }

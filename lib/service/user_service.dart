@@ -6,9 +6,9 @@ import 'package:warranti_app/service/token_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserService {
-  final storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
-  Future<String?> getUserId() async {
+  static Future<String?> getUserId() async {
     Map<String, dynamic>? storedUser = await getStoredUser();
     if (storedUser == null) return null;
     if (storedUser.isEmpty) return null;
@@ -16,9 +16,9 @@ class UserService {
     return storedUser['_id'];
   }
 
-  Future<Map<String, dynamic>?> getStoredUser() async {
+  static Future<Map<String, dynamic>?> getStoredUser() async {
     try {
-      final userJson = await storage.read(key: 'user');
+      final userJson = await _storage.read(key: 'user');
       if (userJson != null) {
         return jsonDecode(userJson);
       }
@@ -28,7 +28,7 @@ class UserService {
     return null;
   }
 
-  Future<void> fetchUser() async {
+  static Future<void> fetchUser() async {
     try {
       String? token = await TokenService.getToken();
 
@@ -73,19 +73,19 @@ class UserService {
     }
   }
 
-  Future<void> storeUser(Object user) async {
+  static Future<void> storeUser(Object user) async {
     try {
       final userJson = jsonEncode(user);
-      await storage.write(key: 'user', value: userJson);
+      await _storage.write(key: 'user', value: userJson);
       debugPrint('User stored successfully');
     } catch (e) {
       debugPrint('Error storing user: $e');
     }
   }
 
-  Future<void> deleteUserData() async {
+  static Future<void> deleteUserData() async {
     try {
-      await storage.delete(key: 'user');
+      await _storage.delete(key: 'user');
       debugPrint('User data deleted from storage');
 
       await TokenService.deleteToken();

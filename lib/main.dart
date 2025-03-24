@@ -4,6 +4,8 @@ import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';
 import 'package:warranti_app/screens/warranty_screen.dart';
+import 'package:warranti_app/screens/welcome_screen.dart';
+import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/widgets/connection_checker.dart';
 
 void main() {
@@ -24,9 +26,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home:  const SplashScreen(),
+      navigatorKey: NavigatorService.navigatorKey,
       routes: {
         '/home': (context) => const ConnectionChecker(child: HomeScreen()),
+        '/welcome': (context) => const WelcomeScreen(),
         '/signin': (context) => const SigninScreen(),
+        '/login': (context) => const SigninScreen(),
         '/create': (context) => const CreateScreen(),
       },
       onGenerateRoute: (settings) {

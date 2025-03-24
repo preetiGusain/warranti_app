@@ -8,7 +8,7 @@ Widget buildImage(String imageUrl) {
     child: imageUrl.isNotEmpty
         ? Image.network(
             imageUrl,
-            height: 360,
+            height: 300,
             fit: BoxFit.cover,
           )
         : const Center(child: Text('No Image Available')),
@@ -28,21 +28,24 @@ Widget buildIndicator(int activeIndex) {
   );
 }
 
-Widget buildDetailRow(String label, String value) {
+Widget buildDetailRow(String label, String value, {Icon? icon}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 5),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16),
-        ),
+        if (icon != null)
+          icon
+        else
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16),
+          ),
       ],
     ),
   );

@@ -20,7 +20,7 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
   void initState() {
     super.initState();
     // Access the id here using widget.id
-    print('Warranty ID: ${widget.id}');
+    debugPrint('Warranty ID: ${widget.id}');
     setWarranty(widget.id);
   }
 
@@ -159,66 +159,101 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
       ),
       body: warranty == null
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  // Carousel for displaying product, warranty, and receipt images
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 2.0),
-                    child: CarouselSlider.builder(
-                      options: CarouselOptions(
-                        height: 400,
-                        enlargeCenterPage: true,
-                        viewportFraction: 1,
-                        enlargeStrategy: CenterPageEnlargeStrategy.height,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            activeIndex = index;
-                          });
+          : SingleChildScrollView(
+            child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    // Carousel for displaying product, warranty, and receipt images
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: CarouselSlider.builder(
+                        options: CarouselOptions(
+                          height: 450,
+                          enlargeCenterPage: true,
+                          viewportFraction: 0.98,
+                          enlargeStrategy: CenterPageEnlargeStrategy.height,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              activeIndex = index;
+                            });
+                          },
+                          enableInfiniteScroll: false,
+                        ),
+                        itemCount: warranty['productPhoto'] != null ? 3 : 0,
+                        itemBuilder: (context, index, realIndex) {
+                          final List<String> images = [
+                            warranty['productPhoto'] ?? '',
+                            warranty['warrantyCardPhoto'] ?? '',
+                            warranty['receiptPhoto'] ?? '',
+                          ];
+                          return buildImage(images[index]);
                         },
-                        enableInfiniteScroll: false,
                       ),
-                      itemCount: warranty['productPhoto'] != null ? 3 : 0,
-                      itemBuilder: (context, index, realIndex) {
-                        final List<String> images = [
-                          warranty['productPhoto'] ?? '',
-                          warranty['warrantyCardPhoto'] ?? '',
-                          warranty['receiptPhoto'] ?? '',
-                        ];
-                        return buildImage(images[index]);
-                      },
                     ),
-                  ),
-                  const SizedBox(height: 7),
-                  // Page indicator
-                  buildIndicator(activeIndex),
-
-                  const SizedBox(height: 7),
-
-                  // Warranty details below carousel
-                  Expanded(
-                    child: ListView(
+                    const SizedBox(height: 15),
+                    // Page indicator
+                    buildIndicator(activeIndex),
+            
+                    const SizedBox(height: 20),
+            
+                    // Warranty details below carousel
+                    Column(
                       children: [
-                        buildDetailRow(
-                            'Purchase Date:',
-                            warranty['purchaseDate'] != null
-                                ? formatDate(warranty['purchaseDate'])
-                                : 'Invalid Date'),
-                        buildDetailRow('Warranty Duration:',
-                            '${warranty['warrantyDuration']} ${warranty['warrantyDurationUnit']}'),
-                        buildDetailRow(
-                            'Warranty Expiry:',
-                            warranty['warrantyEndDate'] != null
-                                ? formatDate(warranty['warrantyEndDate'])
-                                : 'Invalid Date'),
-                        buildDetailRow('Status:', warranty['status'] ?? 'N/A'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: buildDetailRow(
+                                'Purchase Date:',
+                                warranty['purchaseDate'] != null
+                                    ? formatDate(warranty['purchaseDate'])
+                                    : 'Invalid Date',
+                              ),
+                            ),
+                            Expanded(
+                              child: buildDetailRow(
+                                'Warranty Duration:',
+                                '${warranty['warrantyDuration']} ${warranty['warrantyDurationUnit']}',
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: buildDetailRow(
+                                'Warranty Expiry:',
+                                warranty['warrantyEndDate'] != null
+                                    ? formatDate(warranty['warrantyEndDate'])
+                                    : 'Invalid Date',
+                              ),
+                            ),
+                            Expanded(
+                              child: buildDetailRow(
+                                'Status:',
+                                '',
+                                icon: Icon(
+                                  DateTime.parse(warranty['warrantyEndDate'])
+                                          .isAfter(DateTime.now())
+                                      ? Icons.check_circle_outline
+                                      : Icons.error_outline,
+                                  color:
+                                      DateTime.parse(warranty['warrantyEndDate'])
+                                              .isAfter(DateTime.now())
+                                          ? Colors.green
+                                          : Colors.red,
+                                          size: 30,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+          ),
     );
   }
 }

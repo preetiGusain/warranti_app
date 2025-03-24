@@ -23,7 +23,9 @@ class _CreateScreenState extends State<CreateScreen> {
   int step = 1;
   bool savingWarranty = false;
   bool isMonthSelected = true;
-  final TextEditingController _warrantyDurationController = TextEditingController();
+  final TextEditingController _productNameController = TextEditingController();
+  final TextEditingController _warrantyDurationController =
+      TextEditingController();
 
   Future<void> selectDate(BuildContext context) async {
     final DateTime initialDate = selectedDate ?? DateTime.now();
@@ -175,12 +177,13 @@ class _CreateScreenState extends State<CreateScreen> {
 
   void goToNext() {
     if (step == 1) {
-      if (productName.isEmpty) {
+      if (_productNameController.text.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all fields in step 1')),
         );
       } else {
         setState(() {
+          productName = _productNameController.text;
           step += 1;
         });
       }
@@ -226,266 +229,276 @@ class _CreateScreenState extends State<CreateScreen> {
         ],
       ),
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              LinearProgressIndicator(
-                value: step / 3,
-                backgroundColor: Colors.grey[300],
-                color: const Color.fromARGB(255, 113, 56, 151),
-              ),
-              const SizedBox(height: 20),
-              // Step 1:
-              if (step == 1) ...[
-                TextField(
-                  keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                    labelText: 'Product Name',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      productName = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                productPhoto != null
-                    ? Stack(
-                        children: [
-                          Image.file(
-                            productPhoto!,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.remove_circle, color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  productPhoto = null;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      )
-                    : const Text("No Product Image Selected"),
-                MaterialButton(
-                  color: const Color.fromARGB(255, 130, 77, 160),
-                  onPressed: () {
-                    showImageSourceOptions(context, 'product');
-                  },
-                  child: const Text(
-                    "Select Product Image",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-
-              // Step 2:
-              if (step == 2) ...[
-                GestureDetector(
-                  onTap: () => selectDate(context),
-                  child: AbsorbPointer(
-                    child: TextField(
-                      controller: TextEditingController(
-                        text: selectedDate == null
-                            ? ''
-                            : '${selectedDate?.toLocal()}'.split(' ')[0],
-                      ),
-                      decoration: const InputDecoration(
-                        labelText: 'Purchase Date',
-                        hintText: 'Tap to select a date',
-                      ),
-                      readOnly: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                receiptPhoto != null
-                    ? Stack(
-                        children: [
-                          Image.file(
-                            receiptPhoto!,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.remove_circle,
-                                  color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  receiptPhoto = null;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      )
-                    : const Text("No Receipt Image Selected"),
-                MaterialButton(
-                  color: const Color.fromARGB(255, 130, 77, 160),
-                  onPressed: () {
-                    showImageSourceOptions(context, 'receipt');
-                  },
-                  child: const Text(
-                    "Select Receipt Image",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-
-              // Step 3:
-              if (step == 3) ...[
-                TextField(
-                  controller: _warrantyDurationController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Warranty Duration',
-                    hintText: isMonthSelected ? 'Enter in months' : 'Enter in years',
-                    suffixText: isMonthSelected ? 'months' : 'years',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      if (value.length > 2) {
-                        _warrantyDurationController.text =
-                            value.substring(0, 2);
-                        _warrantyDurationController.selection =
-                            TextSelection.fromPosition(TextPosition(
-                                offset:
-                                    _warrantyDurationController.text.length));
-                      }
-                      warrantyDuration = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Warranty Duration Unit',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      isMonthSelected ? 'Month' : 'Year',
-                      style: const TextStyle(fontSize: 16),
+                    LinearProgressIndicator(
+                      value: step / 3,
+                      backgroundColor: Colors.grey[300],
+                      color: const Color.fromARGB(255, 113, 56, 151),
                     ),
-                    Switch(
-                      value: isMonthSelected,
-                      onChanged: (bool value) {
-                        setState(() {
-                          isMonthSelected = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                warrantyCardPhoto != null
-                    ? Stack(
-                        children: [
-                          Image.file(
-                            warrantyCardPhoto!,
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
+                    const SizedBox(height: 20),
+                    // Step 1:
+                    if (step == 1) ...[
+                      TextField(
+                        controller: _productNameController,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          labelText: 'Product Name',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            productName = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      productPhoto != null
+                          ? Stack(
+                              children: [
+                                Image.file(
+                                  productPhoto!,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.remove_circle,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      setState(() {
+                                        productPhoto = null;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const Text("No Product Image Selected"),
+                      MaterialButton(
+                        color: const Color.fromARGB(255, 130, 77, 160),
+                        onPressed: () {
+                          showImageSourceOptions(context, 'product');
+                        },
+                        child: const Text(
+                          "Select Product Image",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
                           ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: IconButton(
-                              icon: const Icon(Icons.remove_circle,
-                                  color: Colors.white),
-                              onPressed: () {
-                                setState(() {
-                                  warrantyCardPhoto = null;
-                                });
-                              },
+                        ),
+                      ),
+                    ],
+
+                    // Step 2:
+                    if (step == 2) ...[
+                      GestureDetector(
+                        onTap: () => selectDate(context),
+                        child: AbsorbPointer(
+                          child: TextField(
+                            controller: TextEditingController(
+                              text: selectedDate == null
+                                  ? ''
+                                  : '${selectedDate?.toLocal()}'.split(' ')[0],
                             ),
+                            decoration: const InputDecoration(
+                              labelText: 'Purchase Date',
+                              hintText: 'Tap to select a date',
+                            ),
+                            readOnly: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      receiptPhoto != null
+                          ? Stack(
+                              children: [
+                                Image.file(
+                                  receiptPhoto!,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.remove_circle,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      setState(() {
+                                        receiptPhoto = null;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const Text("No Receipt Image Selected"),
+                      MaterialButton(
+                        color: const Color.fromARGB(255, 130, 77, 160),
+                        onPressed: () {
+                          showImageSourceOptions(context, 'receipt');
+                        },
+                        child: const Text(
+                          "Select Receipt Image",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    // Step 3:
+                    if (step == 3) ...[
+                      TextField(
+                        controller: _warrantyDurationController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'Warranty Duration',
+                          hintText: isMonthSelected
+                              ? 'Enter in months'
+                              : 'Enter in years',
+                          suffixText: isMonthSelected ? 'months' : 'years',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            if (value.length > 2) {
+                              _warrantyDurationController.text =
+                                  value.substring(0, 2);
+                              _warrantyDurationController.selection =
+                                  TextSelection.fromPosition(TextPosition(
+                                      offset: _warrantyDurationController
+                                          .text.length));
+                            }
+                            warrantyDuration = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Warranty Duration Unit',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            isMonthSelected ? 'Month' : 'Year',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          Switch(
+                            value: isMonthSelected,
+                            onChanged: (bool value) {
+                              setState(() {
+                                isMonthSelected = value;
+                              });
+                            },
                           ),
                         ],
-                      )
-                    : const Text("No Warranty Card Image Selected"),
-                MaterialButton(
-                  color: const Color.fromARGB(255, 130, 77, 160),
-                  onPressed: () {
-                    showImageSourceOptions(context, 'warrantyCard');
-                  },
-                  child: const Text(
-                    "Select Warranty Card Image",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  // Back button for steps 2 and 3
-                  if (step > 1)
-                    ElevatedButton(
-                      onPressed: savingWarranty ? null : goToPrevious,
-                      child: const Text('Back'),
-                    ),
-
-                  if (step > 1) const Spacer(),
-
-                  // Next button for steps 1 and 2
-                  if (step < 3)
-                    ElevatedButton(
-                      onPressed: goToNext,
-                      child: const Text('Next'),
-                    ),
-
-                  // Save button for step 3
-                  if (step == 3)
-                    ElevatedButton(
-                      onPressed: savingWarranty ? null : handleSubmit,
-                      child: savingWarranty
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
+                      ),
+                      const SizedBox(height: 20),
+                      warrantyCardPhoto != null
+                          ? Stack(
+                              children: [
+                                Image.file(
+                                  warrantyCardPhoto!,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.remove_circle,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      setState(() {
+                                        warrantyCardPhoto = null;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
                             )
-                          : const Text('Save'),
-                    ),
-                ],
+                          : const Text("No Warranty Card Image Selected"),
+                      MaterialButton(
+                        color: const Color.fromARGB(255, 130, 77, 160),
+                        onPressed: () {
+                          showImageSourceOptions(context, 'warrantyCard');
+                        },
+                        child: const Text(
+                          "Select Warranty Card Image",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
-        ),
+
+          // Button Row at the Bottom
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 35.0, vertical: 30.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (step > 1)
+                  ElevatedButton(
+                    onPressed: savingWarranty ? null : goToPrevious,
+                    child: const Text('Back'),
+                  ),
+                if (step < 3)
+                  ElevatedButton(
+                    onPressed: goToNext,
+                    child: const Text('Next'),
+                  ),
+                if (step == 3)
+                  ElevatedButton(
+                    onPressed: savingWarranty ? null : handleSubmit,
+                    child: savingWarranty
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text('Save'),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

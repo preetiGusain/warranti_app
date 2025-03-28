@@ -241,46 +241,54 @@ class _HomeScreenState extends State<HomeScreen> {
                   centerTitle: true,
                   actions: [
                     IconButton(
-                      icon: Stack(clipBehavior: Clip.none, children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundImage:
-                              user.isNotEmpty && user['profilePicture'] != null
-                                  ? NetworkImage(user['profilePicture'])
-                                  : null,
-                          backgroundColor: user['profilePicture'] == null
-                              ? Colors.blueGrey
-                              : Colors.transparent,
-                          child: user.isEmpty || user['profilePicture'] == null
-                              ? Text(
-                                  user['username']?.isNotEmpty == true
-                                      ? user['username'][0].toUpperCase()
-                                      : '?',
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                )
-                              : null,
-                        ),
-                        if (isUserLoading)
-                          const Positioned.fill(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                height: 16,
-                                width: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color.fromARGB(255, 130, 77, 160),
+                      icon: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: user.isNotEmpty &&
+                                    user['profilePicture'] != null &&
+                                    user['profilePicture'].isNotEmpty
+                                ? NetworkImage(user['profilePicture'])
+                                : null,
+                            backgroundColor: user['profilePicture'] == null ||
+                                    user['profilePicture'].isEmpty
+                                ? Colors.blueGrey
+                                : Colors.transparent,
+                            child: user.isEmpty ||
+                                    user['profilePicture'] == null ||
+                                    user['profilePicture'].isEmpty
+                                ? Text(
+                                    user['username']?.isNotEmpty == true
+                                        ? user['username'][0].toUpperCase()
+                                        : '?',
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  )
+                                : null,
+                          ),
+                          if (isUserLoading)
+                            const Positioned.fill(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color.fromARGB(255, 130, 77, 160),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                      ]),
+                        ],
+                      ),
                       onPressed: () {
                         debugPrint('Profile icon pressed');
-                        debugPrint('Profile Picture URL: ${user['profilePicture']}');
+                        debugPrint(
+                            'Profile Picture URL: ${user['profilePicture']}');
                         _scaffoldKey.currentState?.openEndDrawer();
                       },
                     ),
@@ -301,14 +309,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(user['email'] ?? 'Not logged in'),
                               currentAccountPicture: CircleAvatar(
                                 backgroundImage: user.isNotEmpty &&
-                                        user['profilePicture'] != null
+                                        user['profilePicture'] != null &&
+                                        user['profilePicture'].isNotEmpty
                                     ? NetworkImage(user['profilePicture'])
                                     : null,
-                                backgroundColor: user['profilePicture'] == null
-                                    ? Colors.blueGrey
-                                    : Colors.transparent,
+                                backgroundColor:
+                                    user['profilePicture'] == null ||
+                                            user['profilePicture'].isEmpty
+                                        ? Colors.blueGrey
+                                        : Colors.transparent,
                                 child: user.isEmpty ||
-                                        user['profilePicture'] == null
+                                        user['profilePicture'] == null ||
+                                        user['profilePicture'].isEmpty
                                     ? Text(
                                         user.isNotEmpty &&
                                                 user['username'] != null
@@ -469,8 +481,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   bool isExpired = endDate.isBefore(now);
 
                                   // Determine the text and color based on the expiry status
-                                  String statusText =
-                                      isExpired ? 'Expired on:' : 'Valid until:';
+                                  String statusText = isExpired
+                                      ? 'Expired on:'
+                                      : 'Valid until:';
                                   Color statusColor =
                                       isExpired ? Colors.red : Colors.green;
 

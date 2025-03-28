@@ -29,7 +29,7 @@ class _SigninScreenState extends State<SigninScreen> {
         _isSigninLoading = true;
       });
 
-      bool success =
+      final (success, message) =
           await AuthService.loginWithEmailPassword(email, password, context);
       setState(() {
         _isSigninLoading = false;
@@ -38,19 +38,15 @@ class _SigninScreenState extends State<SigninScreen> {
       if (success) {
         // Show success Snackbar
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Signed in successfully!'),
+          SnackBar(
+            content: Text(message),
             backgroundColor: Colors.green,
           ),
         );
-
-        // Delay before navigating to home
-        await Future.delayed(const Duration(seconds: 2));
-        Navigator.pushReplacementNamed(context, '/home');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sign-in failed!'),
+          SnackBar(
+            content: Text(message),
             backgroundColor: Colors.red,
           ),
         );

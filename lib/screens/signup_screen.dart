@@ -216,7 +216,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     setState(() {
                                       _isSignupLoading = true;
                                     });
-                                    final success = await AuthService
+                                    final (success, message) = await AuthService
                                         .signUpWithEmailPassword(
                                       username,
                                       email,
@@ -228,14 +228,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                     });
                                     if (!success) {
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('Signup failed'),
+                                          .showSnackBar(SnackBar(
+                                        content: Text(message),
                                         backgroundColor: Colors.red,
                                       ));
                                     } else {
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('Signup successful!'),
+                                          .showSnackBar(SnackBar(
+                                        content: Text(message),
                                         backgroundColor: Colors.green,
                                       ));
                                     }
@@ -243,8 +243,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 },
                           child: _isSignupLoading
                               ? Padding(
-                                  padding: const EdgeInsets.all(
-                                      8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: const CircularProgressIndicator(
                                     color: Color.fromARGB(255, 130, 77, 160),
                                   ),

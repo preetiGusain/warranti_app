@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:warranti_app/constants.dart';
-import 'package:warranti_app/service/auth_service.dart';
 import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/user_service.dart';
 

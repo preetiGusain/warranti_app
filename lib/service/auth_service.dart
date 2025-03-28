@@ -5,7 +5,6 @@ import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/token_service.dart';
-import 'package:warranti_app/service/user_service.dart';
 
 class AuthService {
   // Checks if the user is signed in by verifying the stored token
@@ -13,7 +12,7 @@ class AuthService {
     try {
       final String? token = await TokenService.getToken();
       debugPrint('Token from TokenService: $token');
-      if(token == null) return;
+      if (token == null) return;
 
       //Checking if the token we have is valid or not
       final response = await http.get(
@@ -56,7 +55,6 @@ class AuthService {
     debugPrint("Got user $user");
     if (user != null) {
       await fetchTokenFromBackendForGoogleLogIn(context, user);
-      NavigatorService.pushNamed('/home');
       return true;
     }
     return false;
@@ -80,6 +78,7 @@ class AuthService {
         }),
       );
       await TokenService.setBothTokensFromResponse(response);
+      NavigatorService.pushNamed('/home');
     } catch (e) {
       debugPrint('Error during request: $e');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -89,23 +88,11 @@ class AuthService {
     }
   }
 
-  // Sign up with Email/Password
-  static Future<bool> loginWithEmailPassword(
+  // Login with Email/Password
+  static Future<(bool, String)> loginWithEmailPassword(
       String email, String password, BuildContext context) async {
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please fill in email'),
-        backgroundColor: Colors.red,
-      ));
-      return false;
-    }
-    if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please fill in password!'),
-        backgroundColor: Colors.red,
-      ));
-      return false;
-    }
+    if (email.isEmpty) return (false, 'Please fill in email');
+    if (password.isEmpty) return (false, 'Please fill in password');
     try {
       final response = await http.post(
         Uri.parse('$backendUri/auth/login'),
@@ -118,38 +105,35 @@ class AuthService {
         }),
       );
 
+      final statusCode = response.statusCode;
+      if (statusCode == 400) {
+        final body = response.body;
+        final json = jsonDecode(body);
+        if (json.containsKey('message') && json['message'] != null) {
+          return (false, json['message'] as String);
+        }
+      }
+
       await TokenService.setBothTokensFromResponse(response);
       NavigatorService.pushNamed('/home');
-      return true;
+      return (true, 'Signed in successfully!');
     } catch (e) {
       debugPrint('Error during login: $e');
-      return false;
+      return (false, 'Sign-in failed!');
     }
   }
 
   // Sign up with Email/Password
-  static Future<bool> signUpWithEmailPassword(String username, String email,
-      String password, BuildContext context) async {
+  static Future<(bool, String)> signUpWithEmailPassword(String username,
+      String email, String password, BuildContext context) async {
     if (username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please fill in username!'),
-        backgroundColor: Colors.red,
-      ));
-      return false;
+      return (false, 'Please fill in username!');
     }
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please fill in email!'),
-        backgroundColor: Colors.red,
-      ));
-      return false;
+      return (false, 'Please fill in email!');
     }
     if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Please fill in password!'),
-        backgroundColor: Colors.red,
-      ));
-      return false;
+      return (false, 'Please fill in password!');
     }
     try {
       final response = await http.post(
@@ -164,12 +148,21 @@ class AuthService {
         }),
       );
 
+      final statusCode = response.statusCode;
+      if (statusCode == 400) {
+        final body = response.body;
+        final json = jsonDecode(body);
+        if (json.containsKey('message') && json['message'] != null) {
+          return (false, json['message'] as String);
+        }
+      }
+
       await TokenService.setBothTokensFromResponse(response);
       NavigatorService.pushNamed('/home');
-      return true;
+      return (true, 'Signup successful!');
     } catch (e) {
       debugPrint('Error during signup: $e');
-      return false;
+      return (false, 'Signup failed');
     }
   }
 }

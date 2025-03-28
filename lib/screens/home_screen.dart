@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               : Colors.transparent,
                           child: user.isEmpty || user['profilePicture'] == null
                               ? Text(
-                                  user.isNotEmpty && user['username'] != null
+                                  user['username']?.isNotEmpty == true
                                       ? user['username'][0].toUpperCase()
                                       : '?',
                                   style: const TextStyle(
@@ -279,6 +279,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                       ]),
                       onPressed: () {
+                        debugPrint('Profile icon pressed');
+                        debugPrint('Profile Picture URL: ${user['profilePicture']}');
                         _scaffoldKey.currentState?.openEndDrawer();
                       },
                     ),

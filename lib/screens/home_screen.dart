@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
-      NavigatorService.pushNamed('/signin');
+      NavigatorService.pushNamed('/login');
     } catch (e) {
       setState(() {
         isLogoutLoading = false;
@@ -175,19 +175,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7E57C2),
-                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Color(0xFF7E57C2)),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     minimumSize: const Size(100, 48),
                   ),
                   onPressed: () => Navigator.of(context).pop(false),
                   child:
-                      const Text("No", style: TextStyle(color: Colors.white)),
+                      const Text("No", style: TextStyle(color: Colors.black)),
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF7E57C2)),
+                    backgroundColor: const Color(0xFF7E57C2),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     minimumSize: const Size(100, 48),
                   ),
@@ -304,6 +306,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         Stack(
                           children: [
                             UserAccountsDrawerHeader(
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 133, 91, 176),
+                              ),
                               accountName: Text(user['username'] ?? 'Guest'),
                               accountEmail:
                                   Text(user['email'] ?? 'Not logged in'),
@@ -360,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: TextButton(
                                   style: TextButton.styleFrom(
                                     foregroundColor: Colors.white,
-                                    backgroundColor: Colors.blueGrey,
+                                    backgroundColor: Color.fromARGB(255, 218, 198, 233),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 18, horizontal: 20),
                                     shape: RoundedRectangleBorder(
@@ -372,11 +377,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(Icons.description,
-                                          color: Colors.white),
+                                          color: Colors.black),
                                       SizedBox(width: 8),
                                       Text('Privacy Policy',
                                           style:
-                                              TextStyle(color: Colors.white)),
+                                              TextStyle(color: Colors.black)),
                                     ],
                                   ),
                                 ),

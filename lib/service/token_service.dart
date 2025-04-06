@@ -32,7 +32,7 @@ class TokenService {
       await refreshTokenFromBackend();
       return await _storage.read(key: 'jwt_token');
     } catch (e) {
-      NavigatorService.pushNamed('/login');
+      NavigatorService.pushNamed('/welcome');
       return null;
     }
   }

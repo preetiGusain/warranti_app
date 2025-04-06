@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:warranti_app/screens/welcome_screen.dart';
 import 'package:warranti_app/service/auth_service.dart';
+import 'package:warranti_app/service/navigator_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,10 +44,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await Future.delayed(const Duration(seconds: 3));
     } catch (e) {
       debugPrint('Error during user authentication: $e');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      );
+      NavigatorService.pushNamed('/welcome');
     }
   }
 

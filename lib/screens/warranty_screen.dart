@@ -191,11 +191,11 @@ class _WarrantyScreenState extends State<WarrantyScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 10),
                     // Page indicator
                     buildIndicator(activeIndex),
             
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
             
                     // Warranty details below carousel
                     Column(

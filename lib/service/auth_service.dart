@@ -34,7 +34,12 @@ class AuthService {
         case 401:
           // Got unauthorized error, let's use the refresh token
           debugPrint("Refresh token required. Status code : $statusCode");
-          await TokenService.refreshTokenFromBackend();
+          final refreshed = await TokenService.refreshTokenFromBackend();
+          if(refreshed) {
+            NavigatorService.pushNamed('/home');
+          } else {
+            NavigatorService.pushNamed('/welcome');
+          }
           return;
         default:
           // Handle other status codes

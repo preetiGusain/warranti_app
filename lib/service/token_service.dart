@@ -9,7 +9,8 @@ import 'package:warranti_app/service/user_service.dart';
 
 class TokenService {
   // Create an instance of FlutterSecureStorage
-  static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  static final FlutterSecureStorage _storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
   // Stores the token
   static Future<void> storeToken(String token) async {
@@ -20,10 +21,10 @@ class TokenService {
   // Retrievesthe token
   static Future<String?> getToken() async {
     final token = await _storage.read(key: 'jwt_token');
-    if(token != null) return token;
+    if (token != null) return token;
     // Token is null, hence checking for refresh token
     final refreshToken = await getRefreshToken();
-    if(refreshToken == null) {
+    if (refreshToken == null) {
       NavigatorService.pushNamed('/login');
       return null;
     }
@@ -61,21 +62,25 @@ class TokenService {
   }
 
   /// Fetches refresh token and access token from the backend.
-  static Future<void> refreshTokenFromBackend() async {
+  static Future<bool> refreshTokenFromBackend() async {
     debugPrint('Refresh Token being called');
     String? id = await UserService.getUserId();
     String? refreshToken = await TokenService.getRefreshToken();
-    if (id == null) throw Exception("Couldn't find id");
-    if (refreshToken == null) throw Exception("Don't have refresh token");
-    final response = await http.post(
-      Uri.parse('$backendUri/auth/refresh'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body:
-          jsonEncode(<String, String>{"id": id, "refreshToken": refreshToken}),
-    );
-    await setBothTokensFromResponse(response);
+    if (id == null || refreshToken == null) return false;
+
+    try {
+      final response = await http.post(
+        Uri.parse('$backendUri/auth/refresh'),
+        headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode( <String, String>{"id": id, "refreshToken": refreshToken}),
+      );
+      await setBothTokensFromResponse(response);
+      return true;
+    } catch (e) {
+      debugPrint('Refresh failed: $e');
+      return false;
+    }
   }
 
   /// Checks response body of Auth APIs and sets tokens correctly

@@ -156,6 +156,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 minimumSize: const Size(100, 48),
               ),
               onPressed: () {
+                print('Not discarding changes, pop the dialog box, stay on create page');
                 NavigatorService.pop();
               },
               child: const Text('No', style: TextStyle(color: Colors.black)),
@@ -169,8 +170,8 @@ class _CreateScreenState extends State<CreateScreen> {
                 minimumSize: const Size(100, 48),
               ),
               onPressed: () {
-                NavigatorService.pop();
-                NavigatorService.pop();
+                print('Discard changes, going to home page');
+                NavigatorService.pushNamed('/home');
               },
               child: const Text('Yes'),
             ),

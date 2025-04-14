@@ -8,7 +8,7 @@ Download our app and take control of your purchases. Store, track, and never los
 
 
 
-[![Website](assets/images/warranty1.png)](https://warranti.in/)
+<img src="assets/images/warranty1.png" width="400"/>
 
 
 [![Google Play Store](https://img.shields.io/badge/Download%20on%20Google%20Play-FFD700?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.preeti.warranti_app&pcampaignid=web_share)
@@ -19,23 +19,25 @@ Download our app and take control of your purchases. Store, track, and never los
 
 **Signin Page**
 
-![Signin Page](assets/images/signin.png)
+<img src="assets/images/signin.png" width="200"/>
 
+---
 
 **Home Screen**
 
-![Home](assets/images/home.png)
+<img src="assets/images/home.png" alt="signin" width="200"/>
 
+---
 
 **Warranty Screens**
 
-![Warranty](assets/images/warranty-page.png)
+<img src="assets/images/warranty-page.png" width="200"/>
 
-
+---
 
 **Create Warranty Page**
 
-![Create](assets/images/create.png)
+<img src="assets/images/create.png" width="200"/>
 
 
 ---
@@ -99,4 +101,3 @@ Effortlessly access and manage all stored warranties from one centralized dashbo
 📧 Email: support@warranti.in
 
 ---
-

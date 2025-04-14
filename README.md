@@ -1,16 +1,102 @@
-# warranti_app
+# Warranti
 
-A new Flutter project.
+This is a simple app written using [Flutter](https://docs.flutter.dev/).
 
-## Getting Started
+**Get Started!** 
 
-This project is a starting point for a Flutter application.
+Download our app and take control of your purchases. Store, track, and never lose a warranty again!
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[![Website](assets/images/warranty1.png)](https://warranti.in/)
+
+
+[![Google Play Store](https://img.shields.io/badge/Download%20on%20Google%20Play-FFD700?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.preeti.warranti_app&pcampaignid=web_share)
+
+---
+
+## Screenshots
+
+**Signin Page**
+
+![Signin Page](assets/images/signin.png)
+
+
+**Home Screen**
+
+![Home](assets/images/home.png)
+
+
+**Warranty Screens**
+
+![Warranty](assets/images/warranty-page.png)
+
+
+
+**Create Warranty Page**
+
+![Create](assets/images/create.png)
+
+
+---
+
+## 🔧 About the App
+
+Warranti is a Flutter app backed by a Node.js (Express) server. The app helps users manage and track product warranties efficiently and securely.
+
+- **Frontend:** Flutter (Dart)
+- **Backend:** [Node.js with Express](https://github.com/preetiGusain/warranti-backend)
+- **Live Website:** [warranti.in](https://warranti.in/)
+
+---
+
+## Why Choose Warranti
+
+**Convenience**  
+Stop scrambling for paperwork when something breaks. Everything you need is in one place.
+
+**Security**  
+Your warranties are securely stored in encrypted cloud storage, ensuring complete safety and easy access.
+
+**Time-Saving**  
+Say goodbye to manual tracking and searching for receipts. Access all your warranty documents with ease.
+
+---
+
+## How It Works
+
+1. **Create an account** using email, Google, or other sign-in options.  
+2. **Tap the Create icon** on the Home Page to add a new warranty.  
+3. **Upload your receipts** along with product details.  
+4. **View and manage** your warranties anytime, anywhere.
+
+---
+
+## Benefits
+
+### Automatic Tracking  
+Warranti tracks warranty expiration dates and sends timely reminders so you never miss a deadline.
+
+### Easy Upload  
+Upload receipts and warranty documents instantly from your mobile.
+
+### Secure & Accessible  
+Your warranties are stored in encrypted cloud storage, accessible from any device.
+
+### Warranty Management  
+Effortlessly access and manage all stored warranties from one centralized dashboard.
+
+---
+
+## Our Mission
+
+**Simplifying warranty management.**
+
+---
+
+## Contact
+
+📧 Email: support@warranti.in
+
+---
+

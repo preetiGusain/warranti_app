@@ -25,7 +25,7 @@ class TokenService {
     // Token is null, hence checking for refresh token
     final refreshToken = await getRefreshToken();
     if (refreshToken == null) {
-      NavigatorService.pushNamed('/login');
+      NavigatorService.pushNamed('/welcome');
       return null;
     }
 

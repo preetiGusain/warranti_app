@@ -5,13 +5,15 @@ import 'package:warranti_app/api/google_signin_api.dart';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/token_service.dart';
+import 'package:warranti_app/util/logger.dart';
 
 class AuthService {
+  static final log = getLogger('AuthService');
   // Checks if the user is signed in by verifying the stored token
   static Future<void> checkUserSignedInOnSplash() async {
     try {
       final String? token = await TokenService.getToken();
-      debugPrint('Token from TokenService: $token');
+      log.d('Token from TokenService: $token');
       if (token == null) return;
 
       //Checking if the token we have is valid or not
@@ -25,15 +27,15 @@ class AuthService {
 
       final statusCode = response.statusCode;
       final body = response.body;
-      debugPrint("Response body: $body");
+      log.d("Response body: $body");
       switch (statusCode) {
         case 200:
-          debugPrint("User is logged in!  Status code : $statusCode");
+          log.i("User is logged in!  Status code : $statusCode");
           NavigatorService.pushNamed('/home');
           return;
         case 401:
           // Got unauthorized error, let's use the refresh token
-          debugPrint("Refresh token required. Status code : $statusCode");
+          log.i("Refresh token required. Status code : $statusCode");
           final refreshed = await TokenService.refreshTokenFromBackend();
           if(refreshed) {
             NavigatorService.pushNamed('/home');
@@ -47,7 +49,7 @@ class AuthService {
               "Got an unexpected response with statusCode : $statusCode");
       }
     } catch (e) {
-      debugPrint('Error during request: $e');
+      log.e('Error during request: $e');
       NavigatorService.pushNamed('/welcome');
       return;
     }
@@ -55,9 +57,9 @@ class AuthService {
 
   // Sign up with Google
   static Future<bool> signInWithGoogle(BuildContext context) async {
-    debugPrint("Signin with google called");
+    log.i("Signin with google called");
     final user = await GoogleSigninApi.login();
-    debugPrint("Got user $user");
+    log.d("Got user $user");
     if (user != null) {
       await fetchTokenFromBackendForGoogleLogIn(context, user);
       return true;
@@ -69,7 +71,7 @@ class AuthService {
   static Future<void> fetchTokenFromBackendForGoogleLogIn(
       BuildContext context, user) async {
     try {
-      debugPrint("Fetching token from backend");
+      log.i("Fetching token from backend");
       final response = await http.post(
         Uri.parse('$backendUri/oauth/google/app'),
         headers: <String, String>{
@@ -85,7 +87,7 @@ class AuthService {
       await TokenService.setBothTokensFromResponse(response);
       NavigatorService.pushNamed('/home');
     } catch (e) {
-      debugPrint('Error during request: $e');
+      log.e('Error during request: $e');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Google Sign-In failed'),
         backgroundColor: Colors.red,
@@ -123,7 +125,7 @@ class AuthService {
       NavigatorService.pushNamed('/home');
       return (true, 'Signed in successfully!');
     } catch (e) {
-      debugPrint('Error during login: $e');
+      log.e('Error during login: $e');
       return (false, 'Sign-in failed!');
     }
   }
@@ -166,7 +168,7 @@ class AuthService {
       NavigatorService.pushNamed('/home');
       return (true, 'Signup successful!');
     } catch (e) {
-      debugPrint('Error during signup: $e');
+      log.e('Error during signup: $e');
       return (false, 'Signup failed');
     }
   }

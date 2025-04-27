@@ -1,13 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/user_service.dart';
+import 'package:warranti_app/util/logger.dart';
 
 class TokenService {
+  static final log = getLogger('TokenService');
+
   // Create an instance of FlutterSecureStorage
   static final FlutterSecureStorage _storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
@@ -15,7 +17,7 @@ class TokenService {
   // Stores the token
   static Future<void> storeToken(String token) async {
     await _storage.write(key: 'jwt_token', value: token);
-    debugPrint('Token stored successfully');
+    log.i('Token stored successfully');
   }
 
   // Retrievesthe token
@@ -40,14 +42,14 @@ class TokenService {
 
   // Deletes the token
   static Future<void> deleteToken() async {
-    debugPrint('Deleting token');
+    log.i('Deleting token');
     return await _storage.delete(key: 'jwt_token');
   }
 
   // Stores the refresh token
   static Future<void> storeRefreshToken(String token) async {
     await _storage.write(key: 'refresh_token', value: token);
-    debugPrint('Token stored successfully');
+    log.i('Token stored successfully');
   }
 
   // Retrieves the refresh token
@@ -57,13 +59,13 @@ class TokenService {
 
   // Deletes the refresh token
   static Future<void> deleteRefreshToken() async {
-    debugPrint('Deleting token');
+    log.i('Deleting token');
     return await _storage.delete(key: 'refresh_token');
   }
 
   /// Fetches refresh token and access token from the backend.
   static Future<bool> refreshTokenFromBackend() async {
-    debugPrint('Refresh Token being called');
+    log.i('Refresh Token being called');
     String? id = await UserService.getUserId();
     String? refreshToken = await TokenService.getRefreshToken();
     if (id == null || refreshToken == null) return false;
@@ -78,7 +80,7 @@ class TokenService {
       await setBothTokensFromResponse(response);
       return true;
     } catch (e) {
-      debugPrint('Refresh failed: $e');
+      log.e('Refresh failed: $e');
       return false;
     }
   }
@@ -87,7 +89,7 @@ class TokenService {
   static Future<void> setBothTokensFromResponse(http.Response response) async {
     final statusCode = response.statusCode;
     final body = response.body;
-    debugPrint("Response body: $body");
+    log.d("Response body: $body");
     switch (statusCode) {
       case 200:
         final json = jsonDecode(body);

@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:warranti_app/util/logger.dart';
 
 class UserService {
+  static final log = getLogger('UserService');
   static final FlutterSecureStorage _storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
   static Future<String?> getUserId() async {
@@ -23,7 +24,7 @@ class UserService {
         return jsonDecode(userJson);
       }
     } catch (e) {
-      debugPrint('Error retrieving user: $e');
+      log.e('Error retrieving user: $e');
     }
     return null;
   }
@@ -33,7 +34,7 @@ class UserService {
       String? token = await TokenService.getToken();
 
       if (token == null) {
-        debugPrint('No token found');
+        log.i('No token found');
         return;
       }
 
@@ -44,32 +45,32 @@ class UserService {
           'Authorization': token,
         },
       );
-      debugPrint('Response from user service: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
+      log.i('Response from user service: ${response.statusCode}');
+      log.d('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final body = response.body.trim();
-        debugPrint("Trimmed body from user service: $body");
+        log.d("Trimmed body from user service: $body");
 
         try {
           final json = jsonDecode(response.body);
-          debugPrint("Decoded JSON: $json");
+          log.d("Decoded JSON: $json");
 
           if (json is Map<String, dynamic>) {
             await storeUser(json);
-            debugPrint('User fetched and stored successfully');
+            log.i('User fetched and stored successfully');
           } else {
-            debugPrint('Decoded JSON is not a Map<String, dynamic>');
+            log.i('Decoded JSON is not a Map<String, dynamic>');
           }
         } catch (e) {
-          debugPrint('Error decoding JSON: $e');
+          log.e('Error decoding JSON: $e');
         }
       } else {
-        debugPrint('Failed to load user profile, Status code: ${response.statusCode}');
-        debugPrint('Response body: ${response.body}');
+        log.i('Failed to load user profile, Status code: ${response.statusCode}');
+        log.d('Response body: ${response.body}');
       }
     } catch (e) {
-      debugPrint('Error fetching user: $e');
+      log.e('Error fetching user: $e');
     }
   }
 
@@ -77,21 +78,21 @@ class UserService {
     try {
       final userJson = jsonEncode(user);
       await _storage.write(key: 'user', value: userJson);
-      debugPrint('User stored successfully');
+      log.i('User stored successfully');
     } catch (e) {
-      debugPrint('Error storing user: $e');
+      log.e('Error storing user: $e');
     }
   }
 
   static Future<void> deleteUserData() async {
     try {
       await _storage.delete(key: 'user');
-      debugPrint('User data deleted from storage');
+      log.i('User data deleted from storage');
 
       await TokenService.deleteToken();
-      debugPrint('Token deleted from storage');
+      log.i('Token deleted from storage');
     } catch (e) {
-      debugPrint('Error deleting user data: $e');
+      log.e('Error deleting user data: $e');
     }
   }
 }

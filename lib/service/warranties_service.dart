@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:warranti_app/constants.dart';
 import 'package:warranti_app/service/token_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:warranti_app/util/logger.dart';
 
 class WarrantiesService {
+  static final log = getLogger('WarrantiesService');
+
   // Gets all warranties
   static Future<List<dynamic>> fetchWarranties() async {
     try {
       String? token = await TokenService.getToken();
 
       if (token == null) {
-        debugPrint('No token found');
+        log.i('No token found');
         return [];
       }
 
@@ -25,7 +27,7 @@ class WarrantiesService {
       );
 
       if (response.statusCode == 200) {
-        //debugPrint("Response body: ${response.body}");
+        log.d("Response body: ${response.body}");
         try {
           final decodedResponse = jsonDecode(response.body);
           if (decodedResponse is Map<String, dynamic> &&
@@ -33,19 +35,19 @@ class WarrantiesService {
             final List<dynamic> warranties = decodedResponse['warranties'];
             return warranties;
           } else {
-            debugPrint('Unexpected response format: $decodedResponse');
+            log.d('Unexpected response format: $decodedResponse');
             return [];
           }
         } catch (e) {
-          debugPrint('Error decoding response: $e');
+          log.e('Error decoding response: $e');
           return [];
         }
       } else {
-        debugPrint('Failed to fetch warranties: ${response.statusCode}');
+        log.i('Failed to fetch warranties: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      debugPrint('Error fetching warranties: $e');
+      log.e('Error fetching warranties: $e');
       return [];
     }
   }
@@ -56,7 +58,7 @@ class WarrantiesService {
       String? token = await TokenService.getToken();
 
       if (token == null) {
-        debugPrint('No token found');
+        log.i('No token found');
         return [];
       }
       final response = await http.get(
@@ -68,7 +70,7 @@ class WarrantiesService {
       );
 
       if (response.statusCode == 200) {
-        //debugPrint("Response body: ${response.body}");
+        log.d("Response body: ${response.body}");
         try {
           final decodedResponse = jsonDecode(response.body);
           if (decodedResponse is Map<String, dynamic> &&
@@ -76,19 +78,19 @@ class WarrantiesService {
             final dynamic warranty = decodedResponse['warranty'];
             return warranty;
           } else {
-            debugPrint('Unexpected response format: $decodedResponse');
+            log.d('Unexpected response format: $decodedResponse');
             return [];
           }
         } catch (e) {
-          debugPrint('Error decoding response: $e');
+          log.e('Error decoding response: $e');
           return [];
         }
       } else {
-        debugPrint('Failed to fetch warranty: ${response.statusCode}');
+        log.i('Failed to fetch warranty: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      debugPrint('Error fetching warranty: $e');
+      log.e('Error fetching warranty: $e');
       return [];
     }
   }
@@ -106,7 +108,7 @@ class WarrantiesService {
     try {
       String? token = await TokenService.getToken();
       if (token == null) {
-        debugPrint('No token found');
+        log.i('No token found');
         return false;
       }
 
@@ -135,15 +137,15 @@ class WarrantiesService {
       final responseBody = await http.Response.fromStream(response);
 
       if (response.statusCode == 200) {
-        debugPrint('Warranty created successfully');
+        log.i('Warranty created successfully');
         return true;
       } else {
-        debugPrint('Error: ${response.statusCode}');
-        debugPrint('Response Body: ${responseBody.body}');
+        log.e('Error: ${response.statusCode}');
+        log.d('Response Body: ${responseBody.body}');
         return false;
       }
     } catch (e) {
-      debugPrint('Error creating warranty: $e');
+      log.e('Error creating warranty: $e');
       return false;
     }
   }
@@ -154,7 +156,7 @@ class WarrantiesService {
       String? token = await TokenService.getToken();
 
       if (token == null) {
-        debugPrint('No token found');
+        log.i('No token found');
         return [];
       }
       final response = await http.delete(
@@ -166,10 +168,10 @@ class WarrantiesService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('Warranty deleted successfully');
+        log.i('Warranty deleted successfully');
       }
     } catch (e) {
-      debugPrint('Error deleting warranty: $e');
+      log.e('Error deleting warranty: $e');
     }
   }
 }

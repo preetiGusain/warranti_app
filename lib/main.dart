@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:warranti_app/screens/create_screen.dart';
+import 'package:warranti_app/screens/create/create_screen.dart';
 import 'package:warranti_app/screens/home_screen.dart';
 import 'package:warranti_app/screens/signin_screen.dart';
 import 'package:warranti_app/screens/splash_screen.dart';

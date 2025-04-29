@@ -7,6 +7,7 @@ import './steps/step2_purchase_info.dart';
 import './steps/step3_warranty_info.dart';
 import 'package:warranti_app/service/navigator_service.dart';
 import 'package:warranti_app/service/warranties_service.dart';
+import 'package:warranti_app/util/image_compressor.dart';
 
 class CreateScreen extends StatefulWidget {
   const CreateScreen({super.key});
@@ -135,18 +136,24 @@ class _CreateScreenState extends State<CreateScreen> {
 
     setState(() => savingWarranty = true);
 
-    final adjustedDuration = isMonthSelected
-        ? warrantyDuration
-        : (int.tryParse(warrantyDuration) ?? 0);
+    final compressedProductPhoto = productPhoto != null
+        ? await ImageCompressor.compressImage(productPhoto!)
+        : null;
+    final compressedWarrantyCardPhoto =
+        await ImageCompressor.compressImage(warrantyCardPhoto!);
+    final compressedReceiptPhoto =
+        await ImageCompressor.compressImage(receiptPhoto!);
+
+    final adjustedDuration = warrantyDuration;
 
     bool success = await WarrantiesService.createWarranty(
       productName: productName,
       purchaseDate: selectedDate!.toIso8601String(),
       warrantyDuration: adjustedDuration.toString(),
       warrantyDurationUnit: selectedUnit,
-      productPhoto: productPhoto,
-      warrantyCardPhoto: warrantyCardPhoto,
-      receiptPhoto: receiptPhoto,
+      productPhoto: compressedProductPhoto,
+      warrantyCardPhoto: compressedWarrantyCardPhoto,
+      receiptPhoto: compressedReceiptPhoto,
     );
 
     setState(() => savingWarranty = false);

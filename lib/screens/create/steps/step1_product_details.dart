@@ -28,7 +28,7 @@ class Step1ProductDetails extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ImagePickerField(
           image: productImage,
           onTap: onImagePick,

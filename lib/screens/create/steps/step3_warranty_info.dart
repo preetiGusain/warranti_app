@@ -36,7 +36,7 @@ class Step3WarrantyInfo extends StatelessWidget {
         SizedBox(height: 20),
         Row(
           children: [
-            Text('Duration Unit:'),
+            const Text('Duration Unit:'),
             Spacer(),
             Switch(
               value: isMonthSelected,
@@ -45,7 +45,7 @@ class Step3WarrantyInfo extends StatelessWidget {
             Text(isMonthSelected ? 'Month' : 'Year'),
           ],
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ImagePickerField(
           image: warrantyCardImage,
           onTap: onWarrantyCardPick,

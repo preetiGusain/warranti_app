@@ -16,6 +16,8 @@ class ImagePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return GestureDetector(
       onTap: onTap,
       child: DottedBorder(
@@ -24,7 +26,7 @@ class ImagePickerField extends StatelessWidget {
         radius: Radius.circular(12),
         dashPattern: [6, 4],
         child: Container(
-          height: 200,
+          height: screenHeight * 0.55,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),

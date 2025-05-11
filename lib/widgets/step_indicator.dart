@@ -15,8 +15,8 @@ class StepIndicator extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(totalSteps, (index) {
         return Container(
-          width: 18,
-          height: 18,
+          width: 16,
+          height: 16,
           margin: const EdgeInsets.symmetric(horizontal: 6),
           decoration: BoxDecoration(
             color: index == currentStep

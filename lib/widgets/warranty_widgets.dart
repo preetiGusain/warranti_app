@@ -20,8 +20,8 @@ Widget buildIndicator(int activeIndex) {
     activeIndex: activeIndex,
     count: 3,
     effect: const JumpingDotEffect(
-      dotHeight: 15,
-      dotWidth: 15,
+      dotHeight: 12,
+      dotWidth: 12,
       dotColor: Colors.black12,
       activeDotColor: Color(0xFFDAB8FC),
     ),

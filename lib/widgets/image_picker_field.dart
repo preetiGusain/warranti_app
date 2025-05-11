@@ -26,7 +26,7 @@ class ImagePickerField extends StatelessWidget {
         radius: Radius.circular(12),
         dashPattern: [6, 4],
         child: Container(
-          height: screenHeight * 0.55,
+          height: screenHeight * 0.60,
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),

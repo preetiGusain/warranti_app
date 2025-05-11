@@ -204,12 +204,12 @@ class _CreateScreenState extends State<CreateScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 80,
+          toolbarHeight: 40,
           title: const Text(
             'Create Warranty',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              fontSize: 32,
+              fontSize: 24,
             ),
           ),
           centerTitle: true,
@@ -224,7 +224,7 @@ class _CreateScreenState extends State<CreateScreen> {
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: StepIndicator(
                 currentStep: step - 1,
                 totalSteps: 3,
